@@ -15,7 +15,7 @@ const MAX_ROUNDS        := 3
 const DRAWERS_PER_ROUND := 2
 const TOTAL_DRAWERS     := 5
 const INITIAL_STASH     := 10000
-const PLAY_COST         := 7000
+const PLAY_COST         := 10000
 
 # --- スタッシュ ---
 var stash := INITIAL_STASH

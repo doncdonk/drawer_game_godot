@@ -4,16 +4,17 @@ extends Node
 
 var _cache: Dictionary = {}
 
-func get_texture(item_name: String) -> ImageTexture:
-	if _cache.has(item_name):
-		return _cache[item_name]
-	var fn := "_bytes_" + item_name.replace('"',"q").replace("「","L").replace("」","R").replace("(","_").replace(")","_").replace("!","x")
+# tex_key = GameData の "tex_key" フィールドをそのまま渡す
+func get_texture(tex_key: String) -> ImageTexture:
+	if _cache.has(tex_key):
+		return _cache[tex_key]
+	var fn := "_bytes_" + tex_key
 	if has_method(fn):
 		var bytes: PackedByteArray = call(fn)
 		var img := Image.new()
 		if img.load_jpg_from_buffer(bytes) == OK:
 			var tex := ImageTexture.create_from_image(img)
-			_cache[item_name] = tex
+			_cache[tex_key] = tex
 			return tex
 	return null
 
