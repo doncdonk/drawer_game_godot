@@ -1,0 +1,507 @@
+[gd_scene format=3 uid="uid://njgnoqq81m38"]
+
+[ext_resource type="Script" uid="uid://brmu6q8h34l7h" path="res://scripts/Main.gd" id="1_main"]
+[ext_resource type="AudioStream" uid="uid://cpwc867ckxfre" path="res://audio/drawer.mp3" id="2_0bbpv"]
+[ext_resource type="AudioStream" uid="uid://chf4dd4mnkeuw" path="res://audio/legendary.mp3" id="3_rarhs"]
+
+[node name="Main" type="Control" unique_id=1199956452]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_main")
+
+[node name="Background" type="ColorRect" parent="." unique_id=999790864]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.051, 0.059, 0.071, 1)
+
+[node name="VBox" type="ScrollContainer" parent="." unique_id=1083955122]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="VBox" unique_id=1362534621]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxInner" type="VBoxContainer" parent="VBox/MarginContainer" unique_id=1590934583]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="VBox/MarginContainer/VBoxInner" unique_id=1552510061]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 26
+text = "🎲 引き出しルートゲーム"
+horizontal_alignment = 1
+
+[node name="StashBar" type="PanelContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=1719048267]
+layout_mode = 2
+
+[node name="StashHBox" type="HBoxContainer" parent="VBox/MarginContainer/VBoxInner/StashBar" unique_id=253328271]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="StashIcon" type="Label" parent="VBox/MarginContainer/VBoxInner/StashBar/StashHBox" unique_id=1970178910]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+theme_override_font_sizes/font_size = 15
+text = "💰 スタッシュ"
+
+[node name="StashAmount" type="Label" parent="VBox/MarginContainer/VBoxInner/StashBar/StashHBox" unique_id=954959109]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.95, 0.5, 1)
+theme_override_font_sizes/font_size = 20
+text = "¥10,000"
+
+[node name="StashCostLabel" type="Label" parent="VBox/MarginContainer/VBoxInner/StashBar/StashHBox" unique_id=1319645548]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.65, 0.75, 1)
+theme_override_font_sizes/font_size = 12
+text = "（1探索 ¥7,000）"
+
+[node name="SubtitleLabel" type="Label" parent="VBox/MarginContainer/VBoxInner" unique_id=1789670809]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+text = "引き出しを開けてアイテムをゲット！最高の価値を目指せ！"
+horizontal_alignment = 1
+
+[node name="ButtonRow" type="HBoxContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=633459602]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="ItemListButton" type="Button" parent="VBox/MarginContainer/VBoxInner/ButtonRow" unique_id=1296950119]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "📋 アイテム図鑑"
+
+[node name="RulesButton" type="Button" parent="VBox/MarginContainer/VBoxInner/ButtonRow" unique_id=972282359]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "📖 ルール"
+
+[node name="TopBar" type="HBoxContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=190654344]
+layout_mode = 2
+theme_override_constants/separation = 30
+alignment = 1
+
+[node name="LabelRound" type="Label" parent="VBox/MarginContainer/VBoxInner/TopBar" unique_id=609388709]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.88, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "ラウンド: 1 / 3"
+
+[node name="LabelValue" type="Label" parent="VBox/MarginContainer/VBoxInner/TopBar" unique_id=1229490031]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.9, 0.5, 1)
+theme_override_font_sizes/font_size = 15
+text = "合計: ¥0"
+
+[node name="LabelItems" type="Label" parent="VBox/MarginContainer/VBoxInner/TopBar" unique_id=796370141]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.85, 1)
+theme_override_font_sizes/font_size = 15
+text = "アイテム: 0個"
+
+[node name="BonusPanel" type="PanelContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=852928714]
+visible = false
+layout_mode = 2
+
+[node name="BonusVBox" type="VBoxContainer" parent="VBox/MarginContainer/VBoxInner/BonusPanel" unique_id=547032330]
+layout_mode = 2
+
+[node name="BonusTitleLabel" type="Label" parent="VBox/MarginContainer/VBoxInner/BonusPanel/BonusVBox" unique_id=1750168633]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.596, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "⭐ ボーナスイベント発生！ ⭐"
+horizontal_alignment = 1
+
+[node name="BonusHBox" type="HBoxContainer" parent="VBox/MarginContainer/VBoxInner/BonusPanel/BonusVBox" unique_id=87832227]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="BonusIcon" type="Control" parent="VBox/MarginContainer/VBoxInner/BonusPanel/BonusVBox/BonusHBox" unique_id=1423668132]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+
+[node name="BonusVBox2" type="VBoxContainer" parent="VBox/MarginContainer/VBoxInner/BonusPanel/BonusVBox/BonusHBox" unique_id=1631365568]
+layout_mode = 2
+
+[node name="BonusLabel" type="Label" parent="VBox/MarginContainer/VBoxInner/BonusPanel/BonusVBox/BonusHBox/BonusVBox2" unique_id=2147089996]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "⭐ ボーナス対象: アイテム名"
+
+[node name="BonusMult" type="Label" parent="VBox/MarginContainer/VBoxInner/BonusPanel/BonusVBox/BonusHBox/BonusVBox2" unique_id=1902360352]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.843, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "2倍！"
+
+[node name="DrawersContainer" type="HBoxContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=269546553]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="UltButtons" type="HBoxContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=255671157]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="PeekButton" type="Button" parent="VBox/MarginContainer/VBoxInner/UltButtons" unique_id=1339893706]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "🔍 中身を見る [1]"
+
+[node name="ResetButton" type="Button" parent="VBox/MarginContainer/VBoxInner/UltButtons" unique_id=884409815]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "🔄 引き出しリセット [1]"
+
+[node name="ActionButtons" type="HBoxContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=201993873]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="NextButton" type="Button" parent="VBox/MarginContainer/VBoxInner/ActionButtons" unique_id=2139481645]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "次のラウンドへ ▶"
+
+[node name="RestartButton" type="Button" parent="VBox/MarginContainer/VBoxInner/ActionButtons" unique_id=483853636]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "もう一度探索"
+
+[node name="LootPanel" type="PanelContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=73510427]
+layout_mode = 2
+
+[node name="LootVBox" type="VBoxContainer" parent="VBox/MarginContainer/VBoxInner/LootPanel" unique_id=403322762]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="LootTitle" type="Label" parent="VBox/MarginContainer/VBoxInner/LootPanel/LootVBox" unique_id=1649616085]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.843, 0, 1)
+theme_override_font_sizes/font_size = 14
+text = "このラウンドの獲得アイテム (0/2)"
+
+[node name="LootList" type="VBoxContainer" parent="VBox/MarginContainer/VBoxInner/LootPanel/LootVBox" unique_id=1620454867]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="InventoryPanel" type="PanelContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=769638607]
+layout_mode = 2
+
+[node name="InventoryVBox" type="VBoxContainer" parent="VBox/MarginContainer/VBoxInner/InventoryPanel" unique_id=1767748550]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="InventoryTitle" type="Label" parent="VBox/MarginContainer/VBoxInner/InventoryPanel/InventoryVBox" unique_id=517815680]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.88, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "📦 所持アイテム"
+
+[node name="InventoryList" type="VBoxContainer" parent="VBox/MarginContainer/VBoxInner/InventoryPanel/InventoryVBox" unique_id=1995268119]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="ResultPanel" type="PanelContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=1123452318]
+visible = false
+layout_mode = 2
+
+[node name="ResultVBox" type="VBoxContainer" parent="VBox/MarginContainer/VBoxInner/ResultPanel" unique_id=2036442706]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ResultTitle" type="Label" parent="VBox/MarginContainer/VBoxInner/ResultPanel/ResultVBox" unique_id=1496676773]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.843, 0, 1)
+theme_override_font_sizes/font_size = 22
+text = "🏆 ゲーム終了！"
+horizontal_alignment = 1
+
+[node name="ResultRank" type="Label" parent="VBox/MarginContainer/VBoxInner/ResultPanel/ResultVBox" unique_id=324249442]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "S級サバイバー！🏆"
+horizontal_alignment = 1
+
+[node name="ResultScore" type="Label" parent="VBox/MarginContainer/VBoxInner/ResultPanel/ResultVBox" unique_id=406254058]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.9, 0.5, 1)
+theme_override_font_sizes/font_size = 15
+text = "合計獲得価値: ¥0"
+horizontal_alignment = 1
+
+[node name="RankingTitle" type="Label" parent="VBox/MarginContainer/VBoxInner/ResultPanel/ResultVBox" unique_id=296085553]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.843, 0, 1)
+theme_override_font_sizes/font_size = 14
+text = "🏅 ハイスコアランキング"
+
+[node name="RankingList" type="VBoxContainer" parent="VBox/MarginContainer/VBoxInner/ResultPanel/ResultVBox" unique_id=757561623]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="PeekOverlay" type="CanvasLayer" parent="." unique_id=1496666002]
+visible = false
+
+[node name="DimBG" type="ColorRect" parent="PeekOverlay" unique_id=2073085345]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.7)
+
+[node name="Panel" type="PanelContainer" parent="PeekOverlay" unique_id=1462102347]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -180.0
+offset_right = 200.0
+offset_bottom = 180.0
+
+[node name="PanelVBox" type="VBoxContainer" parent="PeekOverlay/Panel" unique_id=777934525]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="IndexLabel" type="Label" parent="PeekOverlay/Panel/PanelVBox" unique_id=571209846]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.88, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "引き出し 1 の中身"
+horizontal_alignment = 1
+
+[node name="IconLabel" type="Label" parent="PeekOverlay/Panel/PanelVBox" unique_id=831457575]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "📦"
+horizontal_alignment = 1
+
+[node name="NameLabel" type="Label" parent="PeekOverlay/Panel/PanelVBox" unique_id=1023729948]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "アイテム名"
+horizontal_alignment = 1
+
+[node name="RarityLabel" type="Label" parent="PeekOverlay/Panel/PanelVBox" unique_id=1452001368]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "レア"
+horizontal_alignment = 1
+
+[node name="CloseButton" type="Button" parent="PeekOverlay/Panel/PanelVBox" unique_id=1619062226]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "閉じる"
+
+[node name="SFXDrawer" type="AudioStreamPlayer" parent="." unique_id=1741745798]
+stream = ExtResource("2_0bbpv")
+
+[node name="SFXLegendary" type="AudioStreamPlayer" parent="." unique_id=644647749]
+stream = ExtResource("3_rarhs")
+
+[node name="ItemListOverlay" type="CanvasLayer" parent="." unique_id=282564246]
+visible = false
+
+[node name="DimBG" type="ColorRect" parent="ItemListOverlay" unique_id=1154513930]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.82)
+
+[node name="Panel" type="PanelContainer" parent="ItemListOverlay" unique_id=2107647271]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = 30.0
+offset_right = -40.0
+offset_bottom = -30.0
+
+[node name="VBox" type="VBoxContainer" parent="ItemListOverlay/Panel" unique_id=843086046]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HeaderRow" type="HBoxContainer" parent="ItemListOverlay/Panel/VBox" unique_id=1960698271]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="ItemListOverlay/Panel/VBox/HeaderRow" unique_id=2002050909]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 20
+text = "📋 アイテム図鑑  (全78種)"
+
+[node name="CloseButton" type="Button" parent="ItemListOverlay/Panel/VBox/HeaderRow" unique_id=2040301492]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "✕ 閉じる"
+
+[node name="FilterRow" type="HBoxContainer" parent="ItemListOverlay/Panel/VBox" unique_id=943401374]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="FilterAll" type="Button" parent="ItemListOverlay/Panel/VBox/FilterRow" unique_id=2064983187]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+toggle_mode = true
+button_pressed = true
+text = "すべて"
+
+[node name="FilterCommon" type="Button" parent="ItemListOverlay/Panel/VBox/FilterRow" unique_id=987553442]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.478, 0.541, 0.6, 1)
+theme_override_font_sizes/font_size = 12
+toggle_mode = true
+text = "コモン"
+
+[node name="FilterUncommon" type="Button" parent="ItemListOverlay/Panel/VBox/FilterRow" unique_id=1757235733]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.302, 0.722, 0.478, 1)
+theme_override_font_sizes/font_size = 12
+toggle_mode = true
+text = "アンコモン"
+
+[node name="FilterRare" type="Button" parent="ItemListOverlay/Panel/VBox/FilterRow" unique_id=1189252126]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.29, 0.62, 1, 1)
+theme_override_font_sizes/font_size = 12
+toggle_mode = true
+text = "レア"
+
+[node name="FilterEpic" type="Button" parent="ItemListOverlay/Panel/VBox/FilterRow" unique_id=1613319777]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.69, 0.416, 1, 1)
+theme_override_font_sizes/font_size = 12
+toggle_mode = true
+text = "エピック"
+
+[node name="FilterLegendary" type="Button" parent="ItemListOverlay/Panel/VBox/FilterRow" unique_id=272038495]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.784, 0.267, 1)
+theme_override_font_sizes/font_size = 12
+toggle_mode = true
+text = "レジェンダリー"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="ItemListOverlay/Panel/VBox" unique_id=647220605]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ItemGrid" type="GridContainer" parent="ItemListOverlay/Panel/VBox/ScrollContainer" unique_id=929604347]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 6
+columns = 3
+
+[node name="RulesOverlay" type="CanvasLayer" parent="." unique_id=1790099466]
+visible = false
+
+[node name="DimBG" type="ColorRect" parent="RulesOverlay" unique_id=537524570]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.82)
+
+[node name="Panel" type="PanelContainer" parent="RulesOverlay" unique_id=175163992]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -340.0
+offset_top = -320.0
+offset_right = 340.0
+offset_bottom = 320.0
+
+[node name="VBox" type="VBoxContainer" parent="RulesOverlay/Panel" unique_id=1180325626]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="HeaderRow" type="HBoxContainer" parent="RulesOverlay/Panel/VBox" unique_id=214476577]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="RulesOverlay/Panel/VBox/HeaderRow" unique_id=424903271]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.843, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "📖 ゲームルール"
+
+[node name="CloseButton" type="Button" parent="RulesOverlay/Panel/VBox/HeaderRow" unique_id=558992297]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "✕ 閉じる"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="RulesOverlay/Panel/VBox" unique_id=919817676]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RulesText" type="RichTextLabel" parent="RulesOverlay/Panel/VBox/ScrollContainer" unique_id=1014164774]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+bbcode_enabled = true
+text = "[b][color=#ffd700]💰 スタッシュシステム[/color][/b]
+・初期所持金：¥10,000
+・1探索のコスト：¥7,000
+・探索終了後、獲得アイテムの合計金額がスタッシュに加算されます
+・スタッシュが¥7,000を下回った時点で[color=#ff4444]破産・ゲーム終了[/color]となります
+
+[b][color=#ffd700]🎮 基本ルール[/color][/b]
+・全3ラウンド制（1探索 = 3ラウンド）
+・各ラウンドに5つの引き出しが登場
+・その中から2つを選んで開ける（計6アイテム獲得）
+
+[b][color=#ffd700]⭐ ボーナスイベント[/color][/b]
+・40%の確率でボーナスイベントが発生
+・対象アイテムを引くと価値が倍増！
+　🟡 2倍：50%　🟠 3倍：30%　🔴 4倍：15%　💥 5倍：5%
+
+[b][color=#ffd700]🔮 ウルト能力（各ラウンド1回）[/color][/b]
+・[b]中身を見る🔍[/b]：引き出しを1つランダムで覗き見できる
+・[b]リセット🔄[/b]：全引き出しの中身をシャッフルし直す
+※ラウンド最初のみ使用可（引き出しを開けた後は使用不可）
+
+[b][color=#ffd700]💎 レアリティ[/color][/b]
+・[color=#7a8a99]コモン[/color]（50%）：¥150〜900
+・[color=#4db87a]アンコモン[/color]（30%）：¥1,300〜2,800
+・[color=#4a9eff]レア[/color]（15%）：¥6,500〜13,000
+・[color=#b06aff]エピック[/color]（4%）：¥22,000〜45,000
+・[color=#ffc844]レジェンダリー[/color]（1%）：¥85,000〜200,000
+
+[b][color=#ffd700]🏆 ランキング評価（スタッシュ残高）[/color][/b]
+・S級：¥200,000以上　・A級：¥100,000以上
+・B級：¥50,000以上　・C級：¥20,000以上　・D級：それ以下"
+fit_content = true
