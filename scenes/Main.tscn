@@ -1,10 +1,13 @@
-[gd_scene format=3 uid="uid://beai0jb26caya"]
+[gd_scene format=3 uid="uid://cs61sfhshxx2v"]
 
 [ext_resource type="Script" uid="uid://brmu6q8h34l7h" path="res://scripts/Main.gd" id="1_main"]
-[ext_resource type="AudioStream" uid="uid://cpwc867ckxfre" path="res://audio/drawer.mp3" id="2_0bbpv"]
-[ext_resource type="AudioStream" uid="uid://chf4dd4mnkeuw" path="res://audio/legendary.mp3" id="3_rarhs"]
+[ext_resource type="AudioStream" uid="uid://cpwc867ckxfre" path="res://audio/drawer.mp3" id="2_sfx_drawer"]
+[ext_resource type="AudioStream" uid="uid://chf4dd4mnkeuw" path="res://audio/legendary.mp3" id="3_sfx_legendary"]
+[ext_resource type="AudioStream" uid="uid://cv53ow4oay30a" path="res://audio/explosion.mp3" id="4_jlsqs"]
+[ext_resource type="AudioStream" uid="uid://c6jpbv1h5ww3u" path="res://audio/slot_win.mp3" id="5_q8u5g"]
+[ext_resource type="AudioStream" uid="uid://boy8c2cnf0hai" path="res://audio/slot_reel.wav" id="6_lhr70"]
 
-[node name="Main" type="Control" unique_id=1845261906]
+[node name="Main" type="Control" unique_id=1719361198]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -13,7 +16,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_main")
 
-[node name="Background" type="ColorRect" parent="." unique_id=1255707931]
+[node name="Background" type="ColorRect" parent="." unique_id=479693099]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -22,7 +25,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.051, 0.059, 0.071, 1)
 
-[node name="VBox" type="ScrollContainer" parent="." unique_id=921480193]
+[node name="VBox" type="ScrollContainer" parent="." unique_id=2137652586]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -30,7 +33,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="VBox" unique_id=1148740612]
+[node name="MarginContainer" type="MarginContainer" parent="VBox" unique_id=1856669660]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/margin_left = 20
@@ -38,247 +41,261 @@ theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 16
 
-[node name="VBoxInner" type="VBoxContainer" parent="VBox/MarginContainer" unique_id=966116148]
+[node name="VBoxInner" type="VBoxContainer" parent="VBox/MarginContainer" unique_id=869214273]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 12
 
-[node name="TitleLabel" type="Label" parent="VBox/MarginContainer/VBoxInner" unique_id=847697853]
+[node name="TitleLabel" type="Label" parent="VBox/MarginContainer/VBoxInner" unique_id=1487917915]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 26
 text = "🎲 引き出しルートゲーム"
 horizontal_alignment = 1
 
-[node name="StashBar" type="PanelContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=107540189]
+[node name="StashBar" type="PanelContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=801764777]
 layout_mode = 2
 
-[node name="StashHBox" type="HBoxContainer" parent="VBox/MarginContainer/VBoxInner/StashBar" unique_id=1929482893]
+[node name="StashHBox" type="HBoxContainer" parent="VBox/MarginContainer/VBoxInner/StashBar" unique_id=2118553240]
 layout_mode = 2
 theme_override_constants/separation = 20
 alignment = 1
 
-[node name="StashIcon" type="Label" parent="VBox/MarginContainer/VBoxInner/StashBar/StashHBox" unique_id=1469398796]
+[node name="StashIcon" type="Label" parent="VBox/MarginContainer/VBoxInner/StashBar/StashHBox" unique_id=1935999573]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
 theme_override_font_sizes/font_size = 15
 text = "💰 スタッシュ"
 
-[node name="StashAmount" type="Label" parent="VBox/MarginContainer/VBoxInner/StashBar/StashHBox" unique_id=795563067]
+[node name="StashAmount" type="Label" parent="VBox/MarginContainer/VBoxInner/StashBar/StashHBox" unique_id=1150250880]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.3, 0.95, 0.5, 1)
 theme_override_font_sizes/font_size = 20
 text = "¥10,000"
 
-[node name="StashCostLabel" type="Label" parent="VBox/MarginContainer/VBoxInner/StashBar/StashHBox" unique_id=569770688]
+[node name="StashCostLabel" type="Label" parent="VBox/MarginContainer/VBoxInner/StashBar/StashHBox" unique_id=544983225]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6, 0.65, 0.75, 1)
 theme_override_font_sizes/font_size = 12
 text = "（1探索 ¥10,000）"
 
-[node name="SubtitleLabel" type="Label" parent="VBox/MarginContainer/VBoxInner" unique_id=1763444310]
+[node name="LabelPlayCount" type="Label" parent="VBox/MarginContainer/VBoxInner/StashBar/StashHBox" unique_id=161387613]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.7, 0.85, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "探索回数: 0回"
+horizontal_alignment = 2
+
+[node name="SubtitleLabel" type="Label" parent="VBox/MarginContainer/VBoxInner" unique_id=621641924]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7, 0.75, 0.85, 1)
 theme_override_font_sizes/font_size = 13
 text = "引き出しを開けてアイテムをゲット！最高の価値を目指せ！"
 horizontal_alignment = 1
 
-[node name="ButtonRow" type="HBoxContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=42608578]
+[node name="ButtonRow" type="HBoxContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=1466290948]
 layout_mode = 2
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="ItemListButton" type="Button" parent="VBox/MarginContainer/VBoxInner/ButtonRow" unique_id=1428305117]
+[node name="ItemListButton" type="Button" parent="VBox/MarginContainer/VBoxInner/ButtonRow" unique_id=1454796984]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 text = "📋 アイテム図鑑"
 
-[node name="RulesButton" type="Button" parent="VBox/MarginContainer/VBoxInner/ButtonRow" unique_id=1815407482]
+[node name="JunkBoxButton" type="Button" parent="VBox/MarginContainer/VBoxInner/ButtonRow" unique_id=122697716]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.9, 0.7, 1)
+theme_override_font_sizes/font_size = 13
+text = "🎒 ジャンクボックス"
+
+[node name="RulesButton" type="Button" parent="VBox/MarginContainer/VBoxInner/ButtonRow" unique_id=809052574]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 text = "📖 ルール"
 
-[node name="TopBar" type="HBoxContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=175611978]
+[node name="TopBar" type="HBoxContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=751178736]
 layout_mode = 2
 theme_override_constants/separation = 30
 alignment = 1
 
-[node name="LabelRound" type="Label" parent="VBox/MarginContainer/VBoxInner/TopBar" unique_id=716728148]
+[node name="LabelRound" type="Label" parent="VBox/MarginContainer/VBoxInner/TopBar" unique_id=1293315103]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.88, 1, 1)
 theme_override_font_sizes/font_size = 15
 text = "ラウンド: 1 / 3"
 
-[node name="LabelValue" type="Label" parent="VBox/MarginContainer/VBoxInner/TopBar" unique_id=1798158978]
+[node name="LabelValue" type="Label" parent="VBox/MarginContainer/VBoxInner/TopBar" unique_id=713356112]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.3, 0.9, 0.5, 1)
 theme_override_font_sizes/font_size = 15
 text = "合計: ¥0"
 
-[node name="LabelItems" type="Label" parent="VBox/MarginContainer/VBoxInner/TopBar" unique_id=276295872]
+[node name="LabelItems" type="Label" parent="VBox/MarginContainer/VBoxInner/TopBar" unique_id=415474314]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7, 0.75, 0.85, 1)
 theme_override_font_sizes/font_size = 15
 text = "アイテム: 0個"
 
-[node name="BonusPanel" type="PanelContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=1612102879]
+[node name="BonusPanel" type="PanelContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=2131329744]
 visible = false
 layout_mode = 2
 
-[node name="BonusVBox" type="VBoxContainer" parent="VBox/MarginContainer/VBoxInner/BonusPanel" unique_id=1543648732]
+[node name="BonusVBox" type="VBoxContainer" parent="VBox/MarginContainer/VBoxInner/BonusPanel" unique_id=597359221]
 layout_mode = 2
 
-[node name="BonusTitleLabel" type="Label" parent="VBox/MarginContainer/VBoxInner/BonusPanel/BonusVBox" unique_id=1616501052]
+[node name="BonusTitleLabel" type="Label" parent="VBox/MarginContainer/VBoxInner/BonusPanel/BonusVBox" unique_id=901586049]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.596, 0, 1)
 theme_override_font_sizes/font_size = 18
 text = "⭐ ボーナスイベント発生！ ⭐"
 horizontal_alignment = 1
 
-[node name="BonusHBox" type="HBoxContainer" parent="VBox/MarginContainer/VBoxInner/BonusPanel/BonusVBox" unique_id=1337905737]
+[node name="BonusHBox" type="HBoxContainer" parent="VBox/MarginContainer/VBoxInner/BonusPanel/BonusVBox" unique_id=267801590]
 layout_mode = 2
 theme_override_constants/separation = 12
 alignment = 1
 
-[node name="BonusIcon" type="Control" parent="VBox/MarginContainer/VBoxInner/BonusPanel/BonusVBox/BonusHBox" unique_id=191626487]
+[node name="BonusIcon" type="Control" parent="VBox/MarginContainer/VBoxInner/BonusPanel/BonusVBox/BonusHBox" unique_id=703748606]
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 
-[node name="BonusVBox2" type="VBoxContainer" parent="VBox/MarginContainer/VBoxInner/BonusPanel/BonusVBox/BonusHBox" unique_id=1014534202]
+[node name="BonusVBox2" type="VBoxContainer" parent="VBox/MarginContainer/VBoxInner/BonusPanel/BonusVBox/BonusHBox" unique_id=459541730]
 layout_mode = 2
 
-[node name="BonusLabel" type="Label" parent="VBox/MarginContainer/VBoxInner/BonusPanel/BonusVBox/BonusHBox/BonusVBox2" unique_id=1019866889]
+[node name="BonusLabel" type="Label" parent="VBox/MarginContainer/VBoxInner/BonusPanel/BonusVBox/BonusHBox/BonusVBox2" unique_id=2060970309]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 15
 text = "⭐ ボーナス対象: アイテム名"
 
-[node name="BonusMult" type="Label" parent="VBox/MarginContainer/VBoxInner/BonusPanel/BonusVBox/BonusHBox/BonusVBox2" unique_id=391731794]
+[node name="BonusMult" type="Label" parent="VBox/MarginContainer/VBoxInner/BonusPanel/BonusVBox/BonusHBox/BonusVBox2" unique_id=1497882137]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.843, 0, 1)
 theme_override_font_sizes/font_size = 18
 text = "2倍！"
 
-[node name="DrawersContainer" type="HBoxContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=1599805191]
+[node name="DrawersContainer" type="HBoxContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=79061798]
 layout_mode = 2
 theme_override_constants/separation = 12
 alignment = 1
 
-[node name="UltButtons" type="HBoxContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=1722448895]
+[node name="UltButtons" type="HBoxContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=1465434289]
 layout_mode = 2
 theme_override_constants/separation = 16
 alignment = 1
 
-[node name="PeekButton" type="Button" parent="VBox/MarginContainer/VBoxInner/UltButtons" unique_id=1006127375]
+[node name="PeekButton" type="Button" parent="VBox/MarginContainer/VBoxInner/UltButtons" unique_id=665148296]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "🔍 中身を見る [1]"
 
-[node name="ResetButton" type="Button" parent="VBox/MarginContainer/VBoxInner/UltButtons" unique_id=117235165]
+[node name="ResetButton" type="Button" parent="VBox/MarginContainer/VBoxInner/UltButtons" unique_id=1772090364]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "🔄 引き出しリセット [1]"
 
-[node name="ActionButtons" type="HBoxContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=2085668355]
+[node name="ActionButtons" type="HBoxContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=1545669931]
 layout_mode = 2
 theme_override_constants/separation = 16
 alignment = 1
 
-[node name="NextButton" type="Button" parent="VBox/MarginContainer/VBoxInner/ActionButtons" unique_id=1903563751]
+[node name="NextButton" type="Button" parent="VBox/MarginContainer/VBoxInner/ActionButtons" unique_id=1969758804]
 visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.3, 0.8, 1, 1)
 theme_override_font_sizes/font_size = 16
 text = "次のラウンドへ ▶"
 
-[node name="RestartButton" type="Button" parent="VBox/MarginContainer/VBoxInner/ActionButtons" unique_id=1667091656]
+[node name="SlotButton" type="Button" parent="VBox/MarginContainer/VBoxInner/ActionButtons" unique_id=1312759220]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 14
+text = "🎰 スロット（¥50,000）"
+
+[node name="RestartButton" type="Button" parent="VBox/MarginContainer/VBoxInner/ActionButtons" unique_id=1649334119]
 visible = false
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "もう一度探索"
 
-[node name="LootPanel" type="PanelContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=1272387527]
+[node name="LootPanel" type="PanelContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=830951821]
 layout_mode = 2
 
-[node name="LootVBox" type="VBoxContainer" parent="VBox/MarginContainer/VBoxInner/LootPanel" unique_id=737690871]
+[node name="LootVBox" type="VBoxContainer" parent="VBox/MarginContainer/VBoxInner/LootPanel" unique_id=292455318]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="LootTitle" type="Label" parent="VBox/MarginContainer/VBoxInner/LootPanel/LootVBox" unique_id=230465806]
+[node name="LootTitle" type="Label" parent="VBox/MarginContainer/VBoxInner/LootPanel/LootVBox" unique_id=837595345]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.843, 0, 1)
 theme_override_font_sizes/font_size = 14
 text = "このラウンドの獲得アイテム (0/2)"
 
-[node name="LootList" type="VBoxContainer" parent="VBox/MarginContainer/VBoxInner/LootPanel/LootVBox" unique_id=1853646379]
+[node name="LootList" type="VBoxContainer" parent="VBox/MarginContainer/VBoxInner/LootPanel/LootVBox" unique_id=1768320836]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="InventoryPanel" type="PanelContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=195059022]
+[node name="InventoryPanel" type="PanelContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=607392962]
 layout_mode = 2
 
-[node name="InventoryVBox" type="VBoxContainer" parent="VBox/MarginContainer/VBoxInner/InventoryPanel" unique_id=762783829]
+[node name="InventoryVBox" type="VBoxContainer" parent="VBox/MarginContainer/VBoxInner/InventoryPanel" unique_id=441377287]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="InventoryTitle" type="Label" parent="VBox/MarginContainer/VBoxInner/InventoryPanel/InventoryVBox" unique_id=893454125]
+[node name="InventoryTitle" type="Label" parent="VBox/MarginContainer/VBoxInner/InventoryPanel/InventoryVBox" unique_id=951210255]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.88, 1, 1)
 theme_override_font_sizes/font_size = 14
 text = "📦 所持アイテム"
 
-[node name="InventoryList" type="VBoxContainer" parent="VBox/MarginContainer/VBoxInner/InventoryPanel/InventoryVBox" unique_id=1740091077]
+[node name="InventoryList" type="VBoxContainer" parent="VBox/MarginContainer/VBoxInner/InventoryPanel/InventoryVBox" unique_id=1582393000]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="ResultPanel" type="PanelContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=1180513368]
+[node name="ResultPanel" type="PanelContainer" parent="VBox/MarginContainer/VBoxInner" unique_id=1749473198]
 visible = false
 layout_mode = 2
 
-[node name="ResultVBox" type="VBoxContainer" parent="VBox/MarginContainer/VBoxInner/ResultPanel" unique_id=1904108203]
+[node name="ResultVBox" type="VBoxContainer" parent="VBox/MarginContainer/VBoxInner/ResultPanel" unique_id=1546861043]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="ResultTitle" type="Label" parent="VBox/MarginContainer/VBoxInner/ResultPanel/ResultVBox" unique_id=1103128506]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.843, 0, 1)
-theme_override_font_sizes/font_size = 22
-text = "🏆 ゲーム終了！"
-horizontal_alignment = 1
-
-[node name="ResultRank" type="Label" parent="VBox/MarginContainer/VBoxInner/ResultPanel/ResultVBox" unique_id=2081829900]
+[node name="ResultRank" type="Label" parent="VBox/MarginContainer/VBoxInner/ResultPanel/ResultVBox" unique_id=1243466067]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "S級サバイバー！🏆"
 horizontal_alignment = 1
 
-[node name="ResultScore" type="Label" parent="VBox/MarginContainer/VBoxInner/ResultPanel/ResultVBox" unique_id=46026020]
+[node name="ResultScore" type="Label" parent="VBox/MarginContainer/VBoxInner/ResultPanel/ResultVBox" unique_id=1165929816]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.3, 0.9, 0.5, 1)
 theme_override_font_sizes/font_size = 15
 text = "合計獲得価値: ¥0"
 horizontal_alignment = 1
 
-[node name="RankingTitle" type="Label" parent="VBox/MarginContainer/VBoxInner/ResultPanel/ResultVBox" unique_id=1021520723]
+[node name="RankingTitle" type="Label" parent="VBox/MarginContainer/VBoxInner/ResultPanel/ResultVBox" unique_id=1237569855]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.843, 0, 1)
 theme_override_font_sizes/font_size = 14
 text = "🏅 ハイスコアランキング"
 
-[node name="RankingList" type="VBoxContainer" parent="VBox/MarginContainer/VBoxInner/ResultPanel/ResultVBox" unique_id=1327764583]
+[node name="RankingList" type="VBoxContainer" parent="VBox/MarginContainer/VBoxInner/ResultPanel/ResultVBox" unique_id=644768245]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="PeekOverlay" type="CanvasLayer" parent="." unique_id=1369280658]
+[node name="PeekOverlay" type="CanvasLayer" parent="." unique_id=233328567]
 visible = false
 
-[node name="DimBG" type="ColorRect" parent="PeekOverlay" unique_id=1883774193]
+[node name="DimBG" type="ColorRect" parent="PeekOverlay" unique_id=546917118]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0, 0, 0, 0.7)
 
-[node name="Panel" type="PanelContainer" parent="PeekOverlay" unique_id=68355431]
+[node name="Panel" type="PanelContainer" parent="PeekOverlay" unique_id=1010978160]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -289,56 +306,65 @@ offset_top = -180.0
 offset_right = 200.0
 offset_bottom = 180.0
 
-[node name="PanelVBox" type="VBoxContainer" parent="PeekOverlay/Panel" unique_id=1507034391]
+[node name="PanelVBox" type="VBoxContainer" parent="PeekOverlay/Panel" unique_id=1008480202]
 layout_mode = 2
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="IndexLabel" type="Label" parent="PeekOverlay/Panel/PanelVBox" unique_id=1134193378]
+[node name="IndexLabel" type="Label" parent="PeekOverlay/Panel/PanelVBox" unique_id=352779821]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.88, 1, 1)
 theme_override_font_sizes/font_size = 16
 text = "引き出し 1 の中身"
 horizontal_alignment = 1
 
-[node name="IconLabel" type="Control" parent="PeekOverlay/Panel/PanelVBox" unique_id=1321902622]
+[node name="IconLabel" type="Control" parent="PeekOverlay/Panel/PanelVBox" unique_id=674398689]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 
-[node name="NameLabel" type="Label" parent="PeekOverlay/Panel/PanelVBox" unique_id=1083730377]
+[node name="NameLabel" type="Label" parent="PeekOverlay/Panel/PanelVBox" unique_id=619715540]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 18
 text = "アイテム名"
 horizontal_alignment = 1
 
-[node name="RarityLabel" type="Label" parent="PeekOverlay/Panel/PanelVBox" unique_id=10496308]
+[node name="RarityLabel" type="Label" parent="PeekOverlay/Panel/PanelVBox" unique_id=1157032447]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "レア"
 horizontal_alignment = 1
 
-[node name="CloseButton" type="Button" parent="PeekOverlay/Panel/PanelVBox" unique_id=71377941]
+[node name="CloseButton" type="Button" parent="PeekOverlay/Panel/PanelVBox" unique_id=974711858]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "閉じる"
 
-[node name="SFXDrawer" type="AudioStreamPlayer" parent="." unique_id=813919284]
-stream = ExtResource("2_0bbpv")
+[node name="SFXDrawer" type="AudioStreamPlayer" parent="." unique_id=582461544]
+stream = ExtResource("2_sfx_drawer")
 
-[node name="SFXLegendary" type="AudioStreamPlayer" parent="." unique_id=1054350261]
-stream = ExtResource("3_rarhs")
+[node name="SFXLegendary" type="AudioStreamPlayer" parent="." unique_id=1315151497]
+stream = ExtResource("3_sfx_legendary")
 
-[node name="ItemListOverlay" type="CanvasLayer" parent="." unique_id=1354655106]
+[node name="SFXExplosion" type="AudioStreamPlayer" parent="." unique_id=159597040]
+stream = ExtResource("4_jlsqs")
+
+[node name="SFXSlotWin" type="AudioStreamPlayer" parent="." unique_id=1011108804]
+stream = ExtResource("5_q8u5g")
+
+[node name="SFXSlotReel" type="AudioStreamPlayer" parent="." unique_id=129695558]
+stream = ExtResource("6_lhr70")
+
+[node name="ItemListOverlay" type="CanvasLayer" parent="." unique_id=646834939]
 visible = false
 
-[node name="DimBG" type="ColorRect" parent="ItemListOverlay" unique_id=254106667]
+[node name="DimBG" type="ColorRect" parent="ItemListOverlay" unique_id=245897314]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0, 0, 0, 0.82)
 
-[node name="Panel" type="PanelContainer" parent="ItemListOverlay" unique_id=315309954]
+[node name="Panel" type="PanelContainer" parent="ItemListOverlay" unique_id=427688266]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -347,92 +373,92 @@ offset_top = 30.0
 offset_right = -40.0
 offset_bottom = -30.0
 
-[node name="VBox" type="VBoxContainer" parent="ItemListOverlay/Panel" unique_id=1483661391]
+[node name="VBox" type="VBoxContainer" parent="ItemListOverlay/Panel" unique_id=655181948]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="HeaderRow" type="HBoxContainer" parent="ItemListOverlay/Panel/VBox" unique_id=268302242]
+[node name="HeaderRow" type="HBoxContainer" parent="ItemListOverlay/Panel/VBox" unique_id=229610918]
 layout_mode = 2
 
-[node name="TitleLabel" type="Label" parent="ItemListOverlay/Panel/VBox/HeaderRow" unique_id=1386263119]
+[node name="TitleLabel" type="Label" parent="ItemListOverlay/Panel/VBox/HeaderRow" unique_id=573280839]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 20
 text = "📋 アイテム図鑑  (全88種)"
 
-[node name="CloseButton" type="Button" parent="ItemListOverlay/Panel/VBox/HeaderRow" unique_id=197072788]
+[node name="CloseButton" type="Button" parent="ItemListOverlay/Panel/VBox/HeaderRow" unique_id=1152654166]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "✕ 閉じる"
 
-[node name="FilterRow" type="HBoxContainer" parent="ItemListOverlay/Panel/VBox" unique_id=873096307]
+[node name="FilterRow" type="HBoxContainer" parent="ItemListOverlay/Panel/VBox" unique_id=947963387]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="FilterAll" type="Button" parent="ItemListOverlay/Panel/VBox/FilterRow" unique_id=371843150]
+[node name="FilterAll" type="Button" parent="ItemListOverlay/Panel/VBox/FilterRow" unique_id=697935123]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 toggle_mode = true
 button_pressed = true
 text = "すべて"
 
-[node name="FilterCommon" type="Button" parent="ItemListOverlay/Panel/VBox/FilterRow" unique_id=1037054753]
+[node name="FilterCommon" type="Button" parent="ItemListOverlay/Panel/VBox/FilterRow" unique_id=1365984074]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.478, 0.541, 0.6, 1)
 theme_override_font_sizes/font_size = 12
 toggle_mode = true
 text = "コモン"
 
-[node name="FilterUncommon" type="Button" parent="ItemListOverlay/Panel/VBox/FilterRow" unique_id=833244964]
+[node name="FilterUncommon" type="Button" parent="ItemListOverlay/Panel/VBox/FilterRow" unique_id=590593875]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.302, 0.722, 0.478, 1)
 theme_override_font_sizes/font_size = 12
 toggle_mode = true
 text = "アンコモン"
 
-[node name="FilterRare" type="Button" parent="ItemListOverlay/Panel/VBox/FilterRow" unique_id=151608588]
+[node name="FilterRare" type="Button" parent="ItemListOverlay/Panel/VBox/FilterRow" unique_id=2030423712]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.29, 0.62, 1, 1)
 theme_override_font_sizes/font_size = 12
 toggle_mode = true
 text = "レア"
 
-[node name="FilterEpic" type="Button" parent="ItemListOverlay/Panel/VBox/FilterRow" unique_id=935321880]
+[node name="FilterEpic" type="Button" parent="ItemListOverlay/Panel/VBox/FilterRow" unique_id=1101511216]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.69, 0.416, 1, 1)
 theme_override_font_sizes/font_size = 12
 toggle_mode = true
 text = "エピック"
 
-[node name="FilterLegendary" type="Button" parent="ItemListOverlay/Panel/VBox/FilterRow" unique_id=1388477986]
+[node name="FilterLegendary" type="Button" parent="ItemListOverlay/Panel/VBox/FilterRow" unique_id=743085967]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.784, 0.267, 1)
 theme_override_font_sizes/font_size = 12
 toggle_mode = true
 text = "レジェンダリー"
 
-[node name="ScrollContainer" type="ScrollContainer" parent="ItemListOverlay/Panel/VBox" unique_id=1295081721]
+[node name="ScrollContainer" type="ScrollContainer" parent="ItemListOverlay/Panel/VBox" unique_id=194129573]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="ItemGrid" type="GridContainer" parent="ItemListOverlay/Panel/VBox/ScrollContainer" unique_id=1742493998]
+[node name="ItemGrid" type="GridContainer" parent="ItemListOverlay/Panel/VBox/ScrollContainer" unique_id=1826582093]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 6
 columns = 3
 
-[node name="RulesOverlay" type="CanvasLayer" parent="." unique_id=10663854]
+[node name="RulesOverlay" type="CanvasLayer" parent="." unique_id=193160069]
 visible = false
 
-[node name="DimBG" type="ColorRect" parent="RulesOverlay" unique_id=717795682]
+[node name="DimBG" type="ColorRect" parent="RulesOverlay" unique_id=1257551548]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0, 0, 0, 0.82)
 
-[node name="Panel" type="PanelContainer" parent="RulesOverlay" unique_id=1411817838]
+[node name="Panel" type="PanelContainer" parent="RulesOverlay" unique_id=1039607835]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -443,32 +469,439 @@ offset_top = -320.0
 offset_right = 340.0
 offset_bottom = 320.0
 
-[node name="VBox" type="VBoxContainer" parent="RulesOverlay/Panel" unique_id=2145920929]
+[node name="VBox" type="VBoxContainer" parent="RulesOverlay/Panel" unique_id=603178596]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="HeaderRow" type="HBoxContainer" parent="RulesOverlay/Panel/VBox" unique_id=336134128]
+[node name="HeaderRow" type="HBoxContainer" parent="RulesOverlay/Panel/VBox" unique_id=2062734464]
 layout_mode = 2
 
-[node name="TitleLabel" type="Label" parent="RulesOverlay/Panel/VBox/HeaderRow" unique_id=1127374017]
+[node name="TitleLabel" type="Label" parent="RulesOverlay/Panel/VBox/HeaderRow" unique_id=804901530]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 0.843, 0, 1)
 theme_override_font_sizes/font_size = 20
 text = "📖 ゲームルール"
 
-[node name="CloseButton" type="Button" parent="RulesOverlay/Panel/VBox/HeaderRow" unique_id=1645728304]
+[node name="CloseButton" type="Button" parent="RulesOverlay/Panel/VBox/HeaderRow" unique_id=1834789946]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "✕ 閉じる"
 
-[node name="ScrollContainer" type="ScrollContainer" parent="RulesOverlay/Panel/VBox" unique_id=939394920]
+[node name="ScrollContainer" type="ScrollContainer" parent="RulesOverlay/Panel/VBox" unique_id=1307469765]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="RulesText" type="RichTextLabel" parent="RulesOverlay/Panel/VBox/ScrollContainer" unique_id=776915455]
+[node name="RulesText" type="RichTextLabel" parent="RulesOverlay/Panel/VBox/ScrollContainer" unique_id=1561513431]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 bbcode_enabled = true
 fit_content = true
+
+[node name="DrawerEventOverlay" type="CanvasLayer" parent="." unique_id=1303390900]
+visible = false
+
+[node name="DimBG" type="ColorRect" parent="DrawerEventOverlay" unique_id=17894956]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.75)
+
+[node name="Panel" type="PanelContainer" parent="DrawerEventOverlay" unique_id=469031197]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -160.0
+offset_right = 220.0
+offset_bottom = 160.0
+
+[node name="VBox" type="VBoxContainer" parent="DrawerEventOverlay/Panel" unique_id=1772635724]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="EventIcon" type="Label" parent="DrawerEventOverlay/Panel/VBox" unique_id=1997281716]
+layout_mode = 2
+theme_override_font_sizes/font_size = 52
+text = "💥"
+horizontal_alignment = 1
+
+[node name="EventTitle" type="Label" parent="DrawerEventOverlay/Panel/VBox" unique_id=149480890]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.3, 0.2, 1)
+theme_override_font_sizes/font_size = 22
+text = "トラップ発動！"
+horizontal_alignment = 1
+
+[node name="EventMessage" type="Label" parent="DrawerEventOverlay/Panel/VBox" unique_id=1625337888]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="EventEffect" type="Label" parent="DrawerEventOverlay/Panel/VBox" unique_id=1539984207]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+
+[node name="CloseButton" type="Button" parent="DrawerEventOverlay/Panel/VBox" unique_id=1579065345]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "✕  了解"
+
+[node name="SlotOverlay" type="CanvasLayer" parent="." unique_id=677140069]
+visible = false
+
+[node name="DimBG" type="ColorRect" parent="SlotOverlay" unique_id=745514786]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.82)
+
+[node name="Panel" type="PanelContainer" parent="SlotOverlay" unique_id=877849450]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -300.0
+offset_right = 300.0
+offset_bottom = 300.0
+
+[node name="VBox" type="VBoxContainer" parent="SlotOverlay/Panel" unique_id=452218385]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="Title" type="Label" parent="SlotOverlay/Panel/VBox" unique_id=1359857724]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 22
+text = "🎰 スロットマシン"
+horizontal_alignment = 1
+
+[node name="CostLabel" type="Label" parent="SlotOverlay/Panel/VBox" unique_id=1924250825]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.85, 1)
+theme_override_font_sizes/font_size = 12
+text = "1回 ¥50,000  ｜  停止したシンボルのアイテムを全て獲得"
+horizontal_alignment = 1
+
+[node name="ReelRow" type="HBoxContainer" parent="SlotOverlay/Panel/VBox" unique_id=1655451856]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Reel0" type="PanelContainer" parent="SlotOverlay/Panel/VBox/ReelRow" unique_id=174202705]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+
+[node name="ReelVBox0" type="VBoxContainer" parent="SlotOverlay/Panel/VBox/ReelRow/Reel0" unique_id=1973435314]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="ReelTop0" type="Label" parent="SlotOverlay/Panel/VBox/ReelRow/Reel0/ReelVBox0" unique_id=2052228515]
+modulate = Color(1, 1, 1, 0.35)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "？"
+horizontal_alignment = 1
+
+[node name="ReelMid0" type="Label" parent="SlotOverlay/Panel/VBox/ReelRow/Reel0/ReelVBox0" unique_id=1744438389]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 40
+text = "？"
+horizontal_alignment = 1
+
+[node name="ReelBot0" type="Label" parent="SlotOverlay/Panel/VBox/ReelRow/Reel0/ReelVBox0" unique_id=1152851376]
+modulate = Color(1, 1, 1, 0.35)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "？"
+horizontal_alignment = 1
+
+[node name="Reel1" type="PanelContainer" parent="SlotOverlay/Panel/VBox/ReelRow" unique_id=1968555583]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+
+[node name="ReelVBox1" type="VBoxContainer" parent="SlotOverlay/Panel/VBox/ReelRow/Reel1" unique_id=279490261]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="ReelTop1" type="Label" parent="SlotOverlay/Panel/VBox/ReelRow/Reel1/ReelVBox1" unique_id=1096940892]
+modulate = Color(1, 1, 1, 0.35)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "？"
+horizontal_alignment = 1
+
+[node name="ReelMid1" type="Label" parent="SlotOverlay/Panel/VBox/ReelRow/Reel1/ReelVBox1" unique_id=250998364]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 40
+text = "？"
+horizontal_alignment = 1
+
+[node name="ReelBot1" type="Label" parent="SlotOverlay/Panel/VBox/ReelRow/Reel1/ReelVBox1" unique_id=902981353]
+modulate = Color(1, 1, 1, 0.35)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "？"
+horizontal_alignment = 1
+
+[node name="Reel2" type="PanelContainer" parent="SlotOverlay/Panel/VBox/ReelRow" unique_id=1634112257]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+
+[node name="ReelVBox2" type="VBoxContainer" parent="SlotOverlay/Panel/VBox/ReelRow/Reel2" unique_id=1702140987]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="ReelTop2" type="Label" parent="SlotOverlay/Panel/VBox/ReelRow/Reel2/ReelVBox2" unique_id=419694784]
+modulate = Color(1, 1, 1, 0.35)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "？"
+horizontal_alignment = 1
+
+[node name="ReelMid2" type="Label" parent="SlotOverlay/Panel/VBox/ReelRow/Reel2/ReelVBox2" unique_id=678740012]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 40
+text = "？"
+horizontal_alignment = 1
+
+[node name="ReelBot2" type="Label" parent="SlotOverlay/Panel/VBox/ReelRow/Reel2/ReelVBox2" unique_id=1773185011]
+modulate = Color(1, 1, 1, 0.35)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "？"
+horizontal_alignment = 1
+
+[node name="PayLine" type="Label" parent="SlotOverlay/Panel/VBox" unique_id=812530776]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.8, 1, 0.7)
+theme_override_font_sizes/font_size = 11
+text = "── 中段が有効ライン ──"
+horizontal_alignment = 1
+
+[node name="LootPreview" type="RichTextLabel" parent="SlotOverlay/Panel/VBox" unique_id=542316216]
+layout_mode = 2
+bbcode_enabled = true
+fit_content = true
+horizontal_alignment = 1
+
+[node name="ResultLabel" type="Label" parent="SlotOverlay/Panel/VBox" unique_id=923935709]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="SpinButton" type="Button" parent="SlotOverlay/Panel/VBox" unique_id=422556740]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 1, 0.6, 1)
+theme_override_font_sizes/font_size = 15
+text = "🎲 スピン！（¥50,000）"
+
+[node name="CloseButton" type="Button" parent="SlotOverlay/Panel/VBox" unique_id=1882161809]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "✕ 閉じる"
+
+[node name="StashPhaseOverlay" type="CanvasLayer" parent="." unique_id=1244314902]
+visible = false
+
+[node name="DimBG" type="ColorRect" parent="StashPhaseOverlay" unique_id=1580605931]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.88)
+
+[node name="Panel" type="PanelContainer" parent="StashPhaseOverlay" unique_id=471290250]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+
+[node name="VBox" type="VBoxContainer" parent="StashPhaseOverlay/Panel" unique_id=200253199]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="StashPhaseOverlay/Panel/VBox" unique_id=1008253909]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 20
+text = "📦 アイテムを格納する"
+horizontal_alignment = 1
+
+[node name="SubTitle" type="Label" parent="StashPhaseOverlay/Panel/VBox" unique_id=1555915154]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.85, 1)
+theme_override_font_sizes/font_size = 12
+text = "獲得アイテムをジャンクボックスにドラッグして格納してください。格納しないアイテムは自動売却されます。"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="MainHBox" type="HBoxContainer" parent="StashPhaseOverlay/Panel/VBox" unique_id=812129739]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="LeftPane" type="VBoxContainer" parent="StashPhaseOverlay/Panel/VBox/MainHBox" unique_id=517619076]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="LeftTitle" type="Label" parent="StashPhaseOverlay/Panel/VBox/MainHBox/LeftPane" unique_id=1893481237]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.88, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "🎁 獲得アイテム"
+
+[node name="AcquiredScroll" type="ScrollContainer" parent="StashPhaseOverlay/Panel/VBox/MainHBox/LeftPane" unique_id=782627233]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="AcquiredList" type="VBoxContainer" parent="StashPhaseOverlay/Panel/VBox/MainHBox/LeftPane/AcquiredScroll" unique_id=61232358]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="RightPane" type="VBoxContainer" parent="StashPhaseOverlay/Panel/VBox/MainHBox" unique_id=770275337]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="RightTitle" type="Label" parent="StashPhaseOverlay/Panel/VBox/MainHBox/RightPane" unique_id=1166090538]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.9, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+text = "🎒 ジャンクボックス（3×10）"
+
+[node name="GridContainer" type="Control" parent="StashPhaseOverlay/Panel/VBox/MainHBox/RightPane" unique_id=1367615273]
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SellPreview" type="Label" parent="StashPhaseOverlay/Panel/VBox" unique_id=1618147629]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.6, 0.4, 1)
+theme_override_font_sizes/font_size = 13
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="ConfirmButton" type="Button" parent="StashPhaseOverlay/Panel/VBox" unique_id=340122043]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 1, 0.6, 1)
+theme_override_font_sizes/font_size = 15
+text = "✅ 確定して次へ"
+
+[node name="JunkBoxOverlay" type="CanvasLayer" parent="." unique_id=367929880]
+visible = false
+
+[node name="DimBG" type="ColorRect" parent="JunkBoxOverlay" unique_id=1262323083]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.88)
+
+[node name="Panel" type="PanelContainer" parent="JunkBoxOverlay" unique_id=978219586]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+
+[node name="VBox" type="VBoxContainer" parent="JunkBoxOverlay/Panel" unique_id=118124822]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="HeaderRow" type="HBoxContainer" parent="JunkBoxOverlay/Panel/VBox" unique_id=1353460272]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="JunkBoxOverlay/Panel/VBox/HeaderRow" unique_id=2141988178]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.4, 0.9, 0.7, 1)
+theme_override_font_sizes/font_size = 20
+text = "🎒 ジャンクボックス"
+
+[node name="CloseButton" type="Button" parent="JunkBoxOverlay/Panel/VBox/HeaderRow" unique_id=1265867071]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "✕ 閉じる"
+
+[node name="SubTitle" type="Label" parent="JunkBoxOverlay/Panel/VBox" unique_id=1629035534]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.85, 1)
+theme_override_font_sizes/font_size = 12
+text = "アイテムをドラッグして移動。アイテムをクリックして選択後、ニキータの画像にドラッグするか「売却」ボタンで売却できます。"
+autowrap_mode = 3
+
+[node name="ContentHBox" type="HBoxContainer" parent="JunkBoxOverlay/Panel/VBox" unique_id=776064681]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="GridContainer" type="Control" parent="JunkBoxOverlay/Panel/VBox/ContentHBox" unique_id=1376234129]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="NikitaPane" type="VBoxContainer" parent="JunkBoxOverlay/Panel/VBox/ContentHBox" unique_id=352635971]
+custom_minimum_size = Vector2(290, 0)
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="NikitaTitle" type="Label" parent="JunkBoxOverlay/Panel/VBox/ContentHBox/NikitaPane" unique_id=157163523]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.75, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "🧔 ニキータ"
+horizontal_alignment = 1
+
+[node name="NikitaIconLabel" type="Label" parent="JunkBoxOverlay/Panel/VBox/ContentHBox/NikitaPane" unique_id=572255588]
+layout_mode = 2
+theme_override_font_sizes/font_size = 44
+text = "🧔"
+horizontal_alignment = 1
+
+[node name="NikitaSubLabel" type="Label" parent="JunkBoxOverlay/Panel/VBox/ContentHBox/NikitaPane" unique_id=1554051724]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.85, 1)
+theme_override_font_sizes/font_size = 11
+text = "↓ アイテムをドラッグして売却ボックスへ"
+horizontal_alignment = 1
+
+[node name="NikitaGridContainer" type="Control" parent="JunkBoxOverlay/Panel/VBox/ContentHBox/NikitaPane" unique_id=894363483]
+custom_minimum_size = Vector2(290, 250)
+layout_mode = 2
+
+[node name="SellButton" type="Button" parent="JunkBoxOverlay/Panel/VBox/ContentHBox/NikitaPane" unique_id=586902774]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.75, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+disabled = true
+text = "💰 売却する"
+
+[node name="InfoLabel" type="Label" parent="JunkBoxOverlay/Panel/VBox" unique_id=1264522705]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.88, 1, 1)
+theme_override_font_sizes/font_size = 13
+horizontal_alignment = 1

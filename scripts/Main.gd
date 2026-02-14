@@ -2,6 +2,9 @@
 # メインシーンの全UI制御
 extends Control
 
+const JunkBoxGridScene := preload("res://scripts/JunkBoxGrid.gd")
+const NikitaGridScene  := preload("res://scripts/NikitaGrid.gd")
+
 # ── ノード参照 ──────────────────────────────
 @onready var label_round      := $VBox/MarginContainer/VBoxInner/TopBar/LabelRound
 @onready var label_value      := $VBox/MarginContainer/VBoxInner/TopBar/LabelValue
@@ -9,6 +12,7 @@ extends Control
 
 @onready var stash_amount     := $VBox/MarginContainer/VBoxInner/StashBar/StashHBox/StashAmount
 @onready var stash_cost_label := $VBox/MarginContainer/VBoxInner/StashBar/StashHBox/StashCostLabel
+@onready var label_play_count := $VBox/MarginContainer/VBoxInner/StashBar/StashHBox/LabelPlayCount
 
 @onready var bonus_panel      := $VBox/MarginContainer/VBoxInner/BonusPanel
 @onready var bonus_label      := $VBox/MarginContainer/VBoxInner/BonusPanel/BonusVBox/BonusHBox/BonusVBox2/BonusLabel
@@ -20,6 +24,7 @@ extends Control
 @onready var ult_peek_btn     := $VBox/MarginContainer/VBoxInner/UltButtons/PeekButton
 @onready var ult_reset_btn    := $VBox/MarginContainer/VBoxInner/UltButtons/ResetButton
 @onready var next_btn         := $VBox/MarginContainer/VBoxInner/ActionButtons/NextButton
+@onready var slot_btn         := $VBox/MarginContainer/VBoxInner/ActionButtons/SlotButton
 @onready var restart_btn      := $VBox/MarginContainer/VBoxInner/ActionButtons/RestartButton
 
 @onready var loot_panel       := $VBox/MarginContainer/VBoxInner/LootPanel
@@ -43,6 +48,48 @@ extends Control
 
 @onready var sfx_drawer       := $SFXDrawer
 @onready var sfx_legendary    := $SFXLegendary
+@onready var sfx_explosion    := $SFXExplosion
+@onready var sfx_slot_win     := $SFXSlotWin
+@onready var sfx_slot_reel    := $SFXSlotReel
+
+# ── スロットオーバーレイ ──────────────────────
+@onready var slot_overlay     := $SlotOverlay
+@onready var slot_result_lbl  := $SlotOverlay/Panel/VBox/ResultLabel
+@onready var slot_loot_preview: RichTextLabel = $SlotOverlay/Panel/VBox/LootPreview
+@onready var slot_spin_btn    := $SlotOverlay/Panel/VBox/SpinButton
+@onready var slot_close_btn   := $SlotOverlay/Panel/VBox/CloseButton
+# リール上中下ラベル [reel_idx][0=top,1=mid,2=bot]
+var _reel_labels: Array = []
+var _slot_reel_looping := false   # リール回転音ループ制御
+
+# ── トラップイベントオーバーレイ ───────────────
+@onready var event_overlay    := $DrawerEventOverlay
+@onready var event_icon       := $DrawerEventOverlay/Panel/VBox/EventIcon
+@onready var event_title      := $DrawerEventOverlay/Panel/VBox/EventTitle
+@onready var event_message    := $DrawerEventOverlay/Panel/VBox/EventMessage
+@onready var event_effect     := $DrawerEventOverlay/Panel/VBox/EventEffect
+@onready var event_close_btn  := $DrawerEventOverlay/Panel/VBox/CloseButton
+
+# ── ジャンクボックスオーバーレイ ──────────────
+@onready var junkbox_overlay    := $JunkBoxOverlay
+@onready var junkbox_grid_node  := $JunkBoxOverlay/Panel/VBox/ContentHBox/GridContainer
+@onready var junkbox_close_btn  := $JunkBoxOverlay/Panel/VBox/HeaderRow/CloseButton
+@onready var junkbox_info_lbl   := $JunkBoxOverlay/Panel/VBox/InfoLabel
+@onready var junkbox_btn        := $VBox/MarginContainer/VBoxInner/ButtonRow/JunkBoxButton
+@onready var nikita_grid_node   := $JunkBoxOverlay/Panel/VBox/ContentHBox/NikitaPane/NikitaGridContainer
+@onready var nikita_sell_btn    := $JunkBoxOverlay/Panel/VBox/ContentHBox/NikitaPane/SellButton
+var _junkbox_grid               = null
+var _nikita_grid                = null
+var _nikita_selected_entry: Dictionary = {}
+
+# ── 格納フェーズオーバーレイ ──────────────────
+@onready var stash_phase_overlay  := $StashPhaseOverlay
+@onready var stash_acquired_list  := $StashPhaseOverlay/Panel/VBox/MainHBox/LeftPane/AcquiredScroll/AcquiredList
+@onready var stash_grid_node      := $StashPhaseOverlay/Panel/VBox/MainHBox/RightPane/GridContainer
+@onready var stash_sell_preview   := $StashPhaseOverlay/Panel/VBox/SellPreview
+@onready var stash_confirm_btn    := $StashPhaseOverlay/Panel/VBox/ConfirmButton
+var _stash_phase_grid             = null   # JunkBoxGrid instance
+var _stash_pending_items: Array   = []
 
 # ── アイテム図鑑 ────────────────────────────
 @onready var item_list_btn      := $VBox/MarginContainer/VBoxInner/ButtonRow/ItemListButton
@@ -69,8 +116,10 @@ var _current_filter := "all"
 func _ready() -> void:
 	GameState.round_started.connect(_on_round_started)
 	GameState.drawer_opened.connect(_on_drawer_opened)
+	GameState.drawer_event.connect(_on_drawer_event)
 	GameState.round_ended.connect(_on_round_ended)
 	GameState.play_finished.connect(_on_play_finished)
+	GameState.stash_phase_started.connect(_on_stash_phase_started)
 	GameState.bonus_event.connect(_on_bonus_event)
 
 	next_btn.pressed.connect(_on_next_pressed)
@@ -93,11 +142,61 @@ func _ready() -> void:
 	rules_btn.pressed.connect(func(): rules_overlay.show())
 	rules_close_btn.pressed.connect(func(): rules_overlay.hide())
 
+	# トラップイベントオーバーレイ
+	event_close_btn.pressed.connect(func(): event_overlay.hide())
+
+	# スロット
+	slot_btn.pressed.connect(_on_slot_btn_pressed)
+	slot_spin_btn.pressed.connect(_on_slot_spin)
+	slot_close_btn.pressed.connect(_on_slot_close)
+	# リール回転音：再生終了時に自動ループ（_slot_reel_loopingフラグで制御）
+	sfx_slot_reel.finished.connect(_on_slot_reel_finished)
+
 	# コスト表示をコードから動的設定（PLAY_COSTの一元管理）
 	stash_cost_label.text = "（1探索 ¥%s）" % _fmt(GameState.PLAY_COST)
 
-	# ルールテキストも動的生成（数値はすべてGameState定数から参照）
-	rules_text.text = _build_rules_text()
+	# ルールテキストを RulesBuilder から動的生成
+	rules_text.text = RulesBuilder.build()
+
+	# ジャンクボックスグリッド（常設）
+	_junkbox_grid = JunkBoxGridScene.new()
+	_junkbox_grid.mode = "junkbox"
+	junkbox_grid_node.add_child(_junkbox_grid)
+	_junkbox_grid.custom_minimum_size = _junkbox_grid.get_required_size()
+	junkbox_btn.pressed.connect(_on_junkbox_btn_pressed)
+	junkbox_close_btn.pressed.connect(_on_junkbox_close)
+	nikita_sell_btn.pressed.connect(_on_nikita_sell)
+
+	# ニキータグリッド
+	_nikita_grid = NikitaGridScene.new()
+	nikita_grid_node.add_child(_nikita_grid)
+	_nikita_grid.custom_minimum_size = _nikita_grid.get_required_size()
+
+	# 格納フェーズグリッド
+	_stash_phase_grid = JunkBoxGridScene.new()
+	_stash_phase_grid.mode = "stash_phase"
+	stash_grid_node.add_child(_stash_phase_grid)
+	_stash_phase_grid.custom_minimum_size = _stash_phase_grid.get_required_size()
+	stash_confirm_btn.pressed.connect(_on_stash_confirm)
+
+	# add_child 後に _ready() が走るのを待ってからシグナル接続
+	await get_tree().process_frame
+	_junkbox_grid.connect("item_selected",   _on_junkbox_item_selected)
+	_junkbox_grid.connect("item_deselected", _on_junkbox_item_deselected)
+	_junkbox_grid.connect("layout_changed",  _refresh_junkbox_info)
+	_junkbox_grid.connect("send_to_nikita",  _on_send_to_nikita)
+	_nikita_grid.connect("items_changed",    _on_nikita_items_changed)
+	_stash_phase_grid.connect("pending_placed",   _on_stash_pending_placed)
+	_stash_phase_grid.connect("pending_returned", _on_stash_pending_returned)
+	_stash_phase_grid.connect("layout_changed",   _refresh_stash_sell_preview)
+
+	# スロット リールラベルをコードで収集
+	for r in 3:
+		_reel_labels.append([
+			get_node("SlotOverlay/Panel/VBox/ReelRow/Reel%d/ReelVBox%d/ReelTop%d" % [r, r, r]),
+			get_node("SlotOverlay/Panel/VBox/ReelRow/Reel%d/ReelVBox%d/ReelMid%d" % [r, r, r]),
+			get_node("SlotOverlay/Panel/VBox/ReelRow/Reel%d/ReelVBox%d/ReelBot%d" % [r, r, r]),
+		])
 
 	_start_session()
 
@@ -106,6 +205,7 @@ func _start_session() -> void:
 	result_panel.hide()
 	peek_overlay.hide()
 	next_btn.hide()
+	slot_btn.hide()
 	restart_btn.hide()
 	loot_panel.show()
 	inventory_panel.show()
@@ -118,6 +218,7 @@ func _start_play() -> void:
 	result_panel.hide()
 	peek_overlay.hide()
 	next_btn.hide()
+	slot_btn.hide()
 	restart_btn.hide()
 	loot_panel.show()
 	inventory_panel.show()
@@ -213,6 +314,7 @@ func _update_stash_display() -> void:
 		stash_amount.add_theme_color_override("font_color", Color("#ffaa44"))
 	else:
 		stash_amount.add_theme_color_override("font_color", Color(0.3, 0.95, 0.5, 1))
+	label_play_count.text = "探索回数: %d回" % GameState.play_count
 
 func _update_ult_buttons() -> void:
 	var can_use: bool = not GameState.ult_used and GameState.current_round_items.size() == 0
@@ -269,6 +371,33 @@ func _on_drawer_opened(index: int, item: Dictionary) -> void:
 	_refresh_loot()
 	_refresh_ui()
 
+# ── 引き出しトラップイベント ──────────────────
+func _on_drawer_event(event: Dictionary) -> void:
+	# 効果音再生（イベントIDで分岐、将来的に他イベントも追加しやすい構造）
+	match event.get("id", ""):
+		"explosion":
+			if sfx_explosion and sfx_explosion.stream:
+				sfx_explosion.play()
+
+	event_icon.text    = event.get("icon", "⚠️")
+	event_title.text   = event.get("title", "イベント発生！")
+	event_message.text = event.get("message", "")
+
+	# 効果テキスト
+	match event.get("effect", "none"):
+		"stash_damage":
+			var dmg: int = int(event.get("applied_value", 0))
+			event_effect.text = "－ ¥%s" % _fmt(dmg)
+			event_effect.add_theme_color_override("font_color", Color("#ff4444"))
+		_:
+			event_effect.text = ""
+
+	_update_stash_display()
+	# アイテム行にトラップフラグが書き込まれたので再描画
+	_refresh_loot()
+	_refresh_inventory()
+	event_overlay.show()
+
 # ── ラウンド終了 ───────────────────────────
 func _on_round_ended(_items: Array) -> void:
 	# 未開封引き出しを全部無効化
@@ -293,7 +422,7 @@ func _on_next_pressed() -> void:
 	GameState.next_round()
 
 # ── 1探索終了 ────────────────────────────
-func _on_play_finished(earned: int, new_stash: int) -> void:
+func _on_play_finished(earned: int, new_stash: int, trap_damage: int) -> void:
 	result_panel.show()
 	loot_panel.hide()
 	bonus_panel.hide()
@@ -301,21 +430,27 @@ func _on_play_finished(earned: int, new_stash: int) -> void:
 
 	var can_continue: bool = GameState.can_continue()
 
+	# 収益サマリーを構築（トラップ損失がある場合は明示）
+	var summary := "今回の獲得: ¥%s" % _fmt(earned)
+	if trap_damage > 0:
+		summary += "　⚠️ トラップ損失: －¥%s" % _fmt(trap_damage)
+	summary += "　→　スタッシュ: ¥%s" % _fmt(new_stash)
+
 	if can_continue:
 		result_rank.text  = "✅ 探索終了"
 		result_rank.add_theme_color_override("font_color", Color("#44ff88"))
-		result_score.text = "今回の獲得: ¥%s　→　スタッシュ: ¥%s" % [
-			_fmt(earned), _fmt(new_stash)]
+		result_score.text = summary
 		restart_btn.text = "▶ 次の探索へ（¥%s）" % _fmt(GameState.PLAY_COST)
 	else:
 		result_rank.text  = "💀 破産！ゲーム終了"
 		result_rank.add_theme_color_override("font_color", Color("#ff4444"))
-		result_score.text = "スタッシュ残高: ¥%s（¥%s 不足）" % [
-			_fmt(new_stash), _fmt(GameState.PLAY_COST - new_stash)]
+		result_score.text = summary + "\n（¥%s 不足）" % _fmt(GameState.PLAY_COST - new_stash)
 		restart_btn.text  = "🔄 最初から探索"
 
 	_build_ranking_list(new_stash)
 	restart_btn.show()
+	# スタッシュが SLOT_COST 以上あるときだけスロットボタンを表示
+	slot_btn.visible = can_continue and GameState.stash >= GameState.SLOT_COST
 
 func _build_ranking_list(current_stash: int) -> void:
 	for c in ranking_list.get_children():
@@ -418,10 +553,19 @@ func _make_item_row(item: Dictionary) -> Control:
 	var sb := StyleBoxFlat.new()
 	sb.set_corner_radius_all(6)
 	var rarity: String = item.get("rarity", "common")
-	sb.bg_color = GameData.RARITY_BG_COLORS.get(rarity, Color(0.15, 0.15, 0.2, 0.5))
-	if item.get("had_bonus", false):
+	var had_trap: bool  = item.get("had_trap", false)
+	var had_bonus: bool = item.get("had_bonus", false)
+
+	# 背景色: トラップ > ボーナス > レアリティ
+	if had_trap:
+		sb.bg_color = Color(0.55, 0.08, 0.08, 0.35)
+		sb.border_color = Color("#ff3333")
+	elif had_bonus:
 		sb.bg_color = Color(1.0, 0.596, 0.0, 0.18)
-	sb.border_color = GameData.RARITY_COLORS.get(rarity, Color.GRAY)
+		sb.border_color = GameData.RARITY_COLORS.get(rarity, Color.GRAY)
+	else:
+		sb.bg_color = GameData.RARITY_BG_COLORS.get(rarity, Color(0.15, 0.15, 0.2, 0.5))
+		sb.border_color = GameData.RARITY_COLORS.get(rarity, Color.GRAY)
 	sb.border_width_left = 3
 	panel.add_theme_stylebox_override("panel", sb)
 
@@ -431,6 +575,8 @@ func _make_item_row(item: Dictionary) -> Control:
 	var icon_node := _make_icon_node(item, 32)
 
 	var vbox := VBoxContainer.new()
+	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
 	var name_lbl := Label.new()
 	name_lbl.text = item["name"]
 	name_lbl.add_theme_font_size_override("font_size", 13)
@@ -439,16 +585,34 @@ func _make_item_row(item: Dictionary) -> Control:
 	var detail_lbl := Label.new()
 	var rarity_name: String = GameData.RARITY_NAMES.get(rarity, rarity)
 	var val_text: String = "¥%s  [%s]" % [_fmt(item["value"]), rarity_name]
-	if item.get("had_bonus", false):
+	if had_bonus:
 		val_text += "  ⭐%d倍ボーナス！" % item.get("bonus_multiplier", 2)
 	detail_lbl.text = val_text
 	detail_lbl.add_theme_font_size_override("font_size", 11)
 	detail_lbl.add_theme_color_override("font_color",
-		Color("#ff9800") if item.get("had_bonus", false)
+		Color("#ff9800") if had_bonus
 		else GameData.RARITY_COLORS.get(rarity, Color.WHITE))
 
 	vbox.add_child(name_lbl)
 	vbox.add_child(detail_lbl)
+
+	# トラップ表示行
+	if had_trap:
+		var trap_event: Dictionary = item.get("trap_event", {})
+		var trap_icon   : String = trap_event.get("icon", "💥")
+		var trap_msg    : String = trap_event.get("message", "トラップ発動")
+		var effect      : String = trap_event.get("effect", "none")
+		var applied     : int    = int(trap_event.get("applied_value", 0))
+
+		var trap_lbl := Label.new()
+		var trap_text := "%s %s" % [trap_icon, trap_msg]
+		if effect == "stash_damage" and applied > 0:
+			trap_text += "  (－¥%s)" % _fmt(applied)
+		trap_lbl.text = trap_text
+		trap_lbl.add_theme_font_size_override("font_size", 11)
+		trap_lbl.add_theme_color_override("font_color", Color("#ff6666"))
+		vbox.add_child(trap_lbl)
+
 	hbox.add_child(icon_node)
 	hbox.add_child(vbox)
 	panel.add_child(hbox)
@@ -562,6 +726,330 @@ func _make_icon_node(item: Dictionary, size: int) -> Control:
 	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return lbl
 
+# ── スロットマシン ──────────────────────────
+func _on_slot_btn_pressed() -> void:
+	# リールをリセットして開く
+	for r in 3:
+		var labels: Array = _reel_labels[r]
+		for lbl: Label in labels:
+			lbl.text = "？"
+	slot_result_lbl.text = ""
+	slot_loot_preview.text = ""
+	_update_slot_spin_btn()
+	slot_overlay.show()
+
+func _update_slot_spin_btn() -> void:
+	var can_spin: bool = GameState.stash >= GameState.SLOT_COST
+	slot_spin_btn.disabled = not can_spin
+	slot_spin_btn.text = "🎲 スピン！（¥%s）" % _fmt(GameState.SLOT_COST) if can_spin \
+		else "残高不足（¥%s 必要）" % _fmt(GameState.SLOT_COST)
+
+func _on_slot_spin() -> void:
+	slot_spin_btn.disabled = true
+	slot_result_lbl.text   = ""
+	slot_loot_preview.text = ""
+
+	# 結果を事前取得（演出はこの後）
+	var spin_result: Dictionary = SlotMachine.spin()
+	if not spin_result["ok"]:
+		slot_result_lbl.text = "残高が足りません"
+		_update_slot_spin_btn()
+		return
+
+	var results: Array = spin_result["results"]
+	var payout:  int   = spin_result["payout"]
+	var loot:    Array = spin_result["loot"]
+	var is_win:  bool  = payout > 0
+
+	# 各リールのストリップを生成（演出用）
+	var strips: Array = []
+	for r in 3:
+		strips.append(SlotMachine.build_reel_strip())
+
+	# 結果シンボルのストリップ内インデックスを確定
+	var stop_indices: Array = []
+	for r in 3:
+		var strip: Array = strips[r]
+		var target_icon: String = results[r]["icon"]
+		# strip内で一致するインデックスを探す（なければ末尾）
+		var found := strip.size() - 1
+		for i in strip.size():
+			if strip[i]["icon"] == target_icon:
+				found = i
+				break
+		stop_indices.append(found)
+
+	# リールアニメーション：順番に止まる
+	# 回転音をループ再生（finished シグナルで繰り返す）
+	if sfx_slot_reel and sfx_slot_reel.stream:
+		_slot_reel_looping = true
+		sfx_slot_reel.play()
+
+	for r in 3:
+		var strip: Array   = strips[r]
+		var stop:  int     = stop_indices[r]
+		var labels: Array  = _reel_labels[r]
+		var spin_ticks := 18 + r * 8  # リールごとに少し長く
+		var cur_pos := randi() % strip.size()
+
+		for tick in spin_ticks:
+			# 減速カーブ：後半ほど遅く
+			var speed: float = 0.03 if tick < spin_ticks - 6 else 0.06 + (tick - (spin_ticks - 6)) * 0.02
+			var size  := strip.size()
+			labels[0].text = strip[(cur_pos - 1 + size) % size]["icon"]
+			labels[1].text = strip[cur_pos]["icon"]
+			labels[2].text = strip[(cur_pos + 1) % size]["icon"]
+			cur_pos = (cur_pos + 1) % size
+			await get_tree().create_timer(speed).timeout
+
+		# 最終停止：中段が結果シンボル
+		var sz := strip.size()
+		labels[0].text = strip[(stop - 1 + sz) % sz]["icon"]
+		labels[1].text = strip[stop]["icon"]
+		labels[2].text = strip[(stop + 1) % sz]["icon"]
+		await get_tree().create_timer(0.2).timeout
+
+	# 全リール停止後に回転音を止める
+	_slot_reel_looping = false
+	if sfx_slot_reel and sfx_slot_reel.playing:
+		sfx_slot_reel.stop()
+
+	_update_stash_display()
+	# スロット獲得アイテムを格納フェーズ待ちリストに追加（GameState.inventoryからは除外）
+	for item: Dictionary in loot:
+		if not item.is_empty():
+			GameState.inventory.erase(item)
+			_slot_pending_loot.append(item)
+	_refresh_inventory()
+
+	# アイテム獲得プレビュー（スロット由来のアイテム名を表示）
+	var loot_texts: Array = []
+	for item: Dictionary in loot:
+		if not item.is_empty():
+			var rarity: String = item.get("rarity", "common")
+			var color:  String = GameData.RARITY_COLORS.get(rarity, Color.WHITE).to_html(false)
+			loot_texts.append("[color=#%s]%s %s (¥%s)[/color]" % [
+				color, item.get("icon", ""), item["name"], _fmt(int(item["value"]))
+			])
+	if not loot_texts.is_empty():
+		slot_loot_preview.parse_bbcode("📦 獲得アイテム: " + "  ".join(loot_texts))
+
+	# 当選・落選メッセージ
+	if is_win:
+		var mult: int = results[0].get("multiplier", 1)
+		slot_result_lbl.text = "🎉 当たり！  ¥%s 獲得！（%d倍）" % [_fmt(payout), mult]
+		slot_result_lbl.add_theme_color_override("font_color", Color("#ffd700"))
+		if sfx_slot_win and sfx_slot_win.stream:
+			sfx_slot_win.play()
+	else:
+		slot_result_lbl.text = "ハズレ…"
+		slot_result_lbl.add_theme_color_override("font_color", Color("#aaaaaa"))
+
+	_update_slot_spin_btn()
+
+var _slot_pending_loot: Array = []   # スロット獲得アイテム（格納フェーズ待ち）
+
+func _on_slot_reel_finished() -> void:
+	if _slot_reel_looping and sfx_slot_reel and sfx_slot_reel.stream:
+		sfx_slot_reel.play()
+
+func _on_slot_close() -> void:
+	_slot_reel_looping = false
+	if sfx_slot_reel and sfx_slot_reel.playing:
+		sfx_slot_reel.stop()
+	slot_overlay.hide()
+	slot_btn.visible = GameState.stash >= GameState.SLOT_COST
+	_update_stash_display()
+	# スロットで獲得したアイテムがあれば格納フェーズへ
+	if not _slot_pending_loot.is_empty():
+		var items := _slot_pending_loot.duplicate()
+		_slot_pending_loot = []
+		_open_stash_phase(items)
+
+# ── ジャンクボックス（探索前整理モード）────────
+func _on_junkbox_btn_pressed() -> void:
+	_refresh_junkbox_info()
+	junkbox_overlay.show()
+
+func _on_junkbox_close() -> void:
+	# ニキータグリッドにアイテムが残っていたらジャンクボックスに戻す
+	if _nikita_grid:
+		for item: Dictionary in _nikita_grid.get_items():
+			var cell := JunkBox.find_free_cell(1, 1)
+			if cell[0] >= 0:
+				JunkBox.place_item(item, cell[0], cell[1])
+		_nikita_grid.clear()
+	_nikita_selected_entry = {}
+	if _junkbox_grid and _junkbox_grid.has_method("clear_selection"):
+		_junkbox_grid.clear_selection()
+	nikita_sell_btn.disabled = true
+	junkbox_overlay.hide()
+
+func _on_junkbox_item_selected(_entry: Dictionary) -> void:
+	pass   # 選択UIはニキータグリッドへのドロップに移行したため不使用
+
+func _on_junkbox_item_deselected() -> void:
+	pass
+
+func _on_nikita_items_changed(items: Array) -> void:
+	nikita_sell_btn.disabled = items.is_empty()
+	var total := 0
+	for item: Dictionary in items:
+		total += int(item["value"])
+	if items.is_empty():
+		junkbox_info_lbl.text = _get_junkbox_usage_text()
+	else:
+		junkbox_info_lbl.text = "売却予定: %d個  合計 ¥%s" % [items.size(), _fmt(total)]
+
+func _on_junkbox_item_sold(_entry: Dictionary, _price: int) -> void:
+	pass   # NikitaGrid経由に移行
+
+func _on_nikita_sell() -> void:
+	if not _nikita_grid:
+		return
+	var items: Array = _nikita_grid.get_items()
+	if items.is_empty():
+		return
+	var total := 0
+	var names: Array = []
+	for item: Dictionary in items:
+		var price: int = int(item["value"])
+		GameState.stash += price
+		total += price
+		names.append(item.get("icon","") + item["name"])
+	_nikita_grid.clear()
+	nikita_sell_btn.disabled = true
+	_update_stash_display()
+	junkbox_info_lbl.text = "💰 売却完了: %s → ¥%s" % ["、".join(names), _fmt(total)]
+	_refresh_junkbox_info.call_deferred()
+
+func _refresh_junkbox_info() -> void:
+	junkbox_info_lbl.text = _get_junkbox_usage_text()
+
+func _get_junkbox_usage_text() -> String:
+	var free := JunkBox.free_cells()
+	var used := JunkBox.ROWS * JunkBox.COLS - free
+	return "使用: %d / %d マス  ｜  空き: %d マス" % [used, JunkBox.ROWS * JunkBox.COLS, free]
+
+# JunkBoxGrid → send_to_nikita シグナル受信
+func _on_send_to_nikita(entry: Dictionary) -> void:
+	var item: Dictionary = entry["item"]
+	if _nikita_grid and _nikita_grid.add_item(item):
+		JunkBox.remove_item(entry)
+		if _junkbox_grid:
+			_junkbox_grid.queue_redraw()
+	else:
+		# ニキータグリッドが満杯 → アイテムはジャンクボックスに残る
+		junkbox_info_lbl.text = "⚠️ ニキータの売却ボックスが満杯です"
+
+# ── 格納フェーズ共通オープン ──────────────────
+func _open_stash_phase(items: Array) -> void:
+	_stash_pending_items = items.duplicate()
+	_stash_phase_grid.set_pending_items(_stash_pending_items)
+	_build_acquired_list()
+	_refresh_stash_sell_preview()
+	stash_phase_overlay.show()
+
+# ── 格納フェーズ ─────────────────────────────
+func _on_stash_phase_started(acquired_items: Array) -> void:
+	_open_stash_phase(acquired_items)
+
+func _build_acquired_list() -> void:
+	for c in stash_acquired_list.get_children():
+		c.queue_free()
+
+	for item: Dictionary in _stash_pending_items:
+		var row := _make_stash_item_row(item)
+		stash_acquired_list.add_child(row)
+
+func _make_stash_item_row(item: Dictionary) -> Control:
+	var panel := PanelContainer.new()
+	var sb    := StyleBoxFlat.new()
+	sb.set_corner_radius_all(5)
+	var rarity: String = item.get("rarity", "common")
+	sb.bg_color     = GameData.RARITY_BG_COLORS.get(rarity, Color(0.15, 0.15, 0.2, 0.5))
+	sb.border_color = GameData.RARITY_COLORS.get(rarity, Color.GRAY)
+	sb.border_width_left = 3
+	panel.add_theme_stylebox_override("panel", sb)
+
+	var hbox := HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 6)
+
+	var icon_lbl := Label.new()
+	icon_lbl.text = item.get("icon", "?")
+	icon_lbl.add_theme_font_size_override("font_size", 22)
+	icon_lbl.custom_minimum_size = Vector2(32, 32)
+	icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	icon_lbl.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+
+	var vbox     := VBoxContainer.new()
+	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var name_lbl := Label.new()
+	name_lbl.text = item["name"]
+	name_lbl.add_theme_font_size_override("font_size", 12)
+	var val_lbl  := Label.new()
+	val_lbl.text = "¥%s" % _fmt(int(item["value"]))
+	val_lbl.add_theme_font_size_override("font_size", 11)
+	val_lbl.add_theme_color_override("font_color",
+		GameData.RARITY_COLORS.get(rarity, Color.WHITE))
+	vbox.add_child(name_lbl)
+	vbox.add_child(val_lbl)
+
+	# ドラッグハンドル（クリックでグリッドへの配置を試みる）
+	var store_btn := Button.new()
+	store_btn.text = "→格納"
+	store_btn.add_theme_font_size_override("font_size", 11)
+	store_btn.pressed.connect(func(): _try_auto_place(item))
+
+	hbox.add_child(icon_lbl)
+	hbox.add_child(vbox)
+	hbox.add_child(store_btn)
+	panel.add_child(hbox)
+	return panel
+
+func _try_auto_place(item: Dictionary) -> void:
+	var cell := JunkBox.find_free_cell(1, 1)
+	if cell[0] < 0:
+		stash_sell_preview.text = "⚠️ ジャンクボックスが満杯です"
+		return
+	var placed := JunkBox.place_item(item, cell[0], cell[1])
+	if not placed.is_empty():
+		_stash_pending_items.erase(item)
+		_stash_phase_grid.set_pending_items(_stash_pending_items)
+		_refresh_stash_sell_preview()
+		# queue_free済みノードの参照を避けるため次フレームで再構築
+		call_deferred("_build_acquired_list")
+
+func _on_stash_pending_placed(item: Dictionary) -> void:
+	_stash_pending_items.erase(item)
+	_refresh_stash_sell_preview()
+	call_deferred("_build_acquired_list")
+
+func _on_stash_pending_returned(item: Dictionary) -> void:
+	_stash_pending_items.append(item)
+	_refresh_stash_sell_preview()
+	call_deferred("_build_acquired_list")
+
+func _refresh_stash_sell_preview() -> void:
+	if _stash_pending_items.is_empty():
+		stash_sell_preview.text = "✅ 全アイテムを格納済み"
+		stash_sell_preview.add_theme_color_override("font_color", Color("#44ff88"))
+		return
+	var total_sell := 0
+	var names: Array = []
+	for item: Dictionary in _stash_pending_items:
+		total_sell += int(item["value"])
+		names.append(item["name"])
+	stash_sell_preview.text = "💰 売却予定: %s → ¥%s" % [
+		"、".join(names), _fmt(total_sell)]
+	stash_sell_preview.add_theme_color_override("font_color", Color("#ffaa44"))
+
+func _on_stash_confirm() -> void:
+	stash_phase_overlay.hide()
+	# 未格納アイテムを売却リストとして渡す
+	GameState.commit_stash_phase(_stash_pending_items.duplicate())
+	_stash_pending_items = []
+
 # ── ユーティリティ ─────────────────────────
 func _fmt(n: int) -> String:
 	# 3桁カンマ区切り
@@ -579,54 +1067,3 @@ func _shorten(s: String) -> String:
 	if s.length() > 8:
 		return s.substr(0, 7) + "…"
 	return s
-
-# ── ルールテキスト動的生成 ──────────────────
-# 数値はすべて GameState / GameData の定数から参照。
-# PLAY_COST などを変更するだけで自動的に反映される。
-func _build_rules_text() -> String:
-	var cost  := _fmt(GameState.PLAY_COST)
-	var init  := _fmt(GameState.INITIAL_STASH)
-	var total_items := GameData.get_all_items().size()
-	var per_run := GameState.MAX_ROUNDS * GameState.DRAWERS_PER_ROUND
-
-	# レアリティごとの価値レンジを GameData.ITEMS から動的計算
-	var ranges: Dictionary = {}
-	for rarity in ["common", "uncommon", "rare", "epic", "legendary"]:
-		var vals: Array = []
-		for item in GameData.ITEMS[rarity]:
-			vals.append(item["value"])
-		vals.sort()
-		ranges[rarity] = [vals[0], vals[vals.size() - 1]]
-
-	return (
-		"[b][color=#ffd700]💰 スタッシュシステム[/color][/b]\n"
-		+ "・初期所持金：¥%s\n" % init
-		+ "・1探索のコスト：¥%s\n" % cost
-		+ "・探索終了後、獲得アイテムの合計金額がスタッシュに加算されます\n"
-		+ "・スタッシュが¥%s を下回った時点で[color=#ff4444]破産・ゲーム終了[/color]となります\n" % cost
-		+ "\n"
-		+ "[b][color=#ffd700]🎮 基本ルール[/color][/b]\n"
-		+ "・全%dラウンド制（1探索 = %dラウンド）\n" % [GameState.MAX_ROUNDS, GameState.MAX_ROUNDS]
-		+ "・各ラウンドに%dつの引き出しが登場\n" % GameState.TOTAL_DRAWERS
-		+ "・その中から%dつを選んで開ける（計%d アイテム獲得）\n" % [GameState.DRAWERS_PER_ROUND, per_run]
-		+ "\n"
-		+ "[b][color=#ffd700]⭐ ボーナスイベント[/color][/b]\n"
-		+ "・40%の確率でボーナスイベントが発生\n"
-		+ "・対象アイテムを引くと価値が倍増！\n"
-		+ "　🟡 2倍：50%　🟠 3倍：30%　🔴 4倍：15%　💥 5倍：5%\n"
-		+ "\n"
-		+ "[b][color=#ffd700]🔮 ウルト能力（各ラウンド1回・引き出しを開ける前のみ使用可）[/color][/b]\n"
-		+ "・[b]中身を見る🔍[/b]：引き出しを1つランダムで覗き見できる\n"
-		+ "・[b]リセット🔄[/b]：全引き出しの中身をシャッフルし直す\n"
-		+ "\n"
-		+ "[b][color=#ffd700]💎 レアリティ（全%d種）[/color][/b]\n" % total_items
-		+ "・[color=#7a8a99]コモン[/color]（50%%）：¥%s〜%s\n" % [_fmt(ranges["common"][0]),    _fmt(ranges["common"][1])]
-		+ "・[color=#4db87a]アンコモン[/color]（30%%）：¥%s〜%s\n" % [_fmt(ranges["uncommon"][0]), _fmt(ranges["uncommon"][1])]
-		+ "・[color=#4a9eff]レア[/color]（15%%）：¥%s〜%s\n" % [_fmt(ranges["rare"][0]),      _fmt(ranges["rare"][1])]
-		+ "・[color=#b06aff]エピック[/color]（4%%）：¥%s〜%s\n" % [_fmt(ranges["epic"][0]),     _fmt(ranges["epic"][1])]
-		+ "・[color=#ffc844]レジェンダリー[/color]（1%%）：¥%s〜%s\n" % [_fmt(ranges["legendary"][0]), _fmt(ranges["legendary"][1])]
-		+ "\n"
-		+ "[b][color=#ffd700]🏆 ランキング評価（スタッシュ残高）[/color][/b]\n"
-		+ "・S級：¥200,000以上　・A級：¥100,000以上\n"
-		+ "・B級：¥50,000以上　・C級：¥20,000以上　・D級：それ以下"
-	)
