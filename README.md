@@ -2,6 +2,9 @@
 
 drawer_game_godot.zip　
 をダウンロードして解凍していくと.exeがあるので実行ください。
-<img width="933" height="696" alt="image" src="https://github.com/user-attachments/assets/02b4afc0-3b41-4835-834a-e058776cb015" />
-<img width="908" height="697" alt="image" src="https://github.com/user-attachments/assets/592717a3-0358-4f58-a631-583bd6d7de41" />
-<img width="946" height="693" alt="image" src="https://github.com/user-attachments/assets/0373c373-7d83-4e66-9993-0c35e040165b" />
+
+
+
+<img width="943" height="704" alt="image" src="https://github.com/user-attachments/assets/0bf7cfdd-e7fd-4c7e-96d4-51f9e7f47c65" />
+<img width="938" height="692" alt="image" src="https://github.com/user-attachments/assets/1ccc2262-e96d-4059-b126-2d2f5c2d2e5e" />
+
