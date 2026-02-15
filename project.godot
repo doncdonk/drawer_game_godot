@@ -20,16 +20,19 @@ config/features=PackedStringArray("4.6", "Forward Plus")
 
 [autoload]
 
-GameData="*uid://dh3qut7mo63wu"
-GameState="*uid://cdc7mkht7xggc"
-IconTextures="*uid://t1bpnbym2r4q"
+GameData="*res://scripts/GameData.gd"
+GameState="*res://scripts/GameState.gd"
+IconTextures="*res://scripts/IconTextures.gd"
+DrawerTexture="*res://scripts/DrawerTexture.gd"
+RulesBuilder="*res://scripts/RulesBuilder.gd"
+SlotMachine="*res://scripts/SlotMachine.gd"
+JunkBox="*res://scripts/JunkBox.gd"
+TaskManager="*res://scripts/TaskManager.gd"
+BlackjackManager="*res://scripts/BlackjackManager.gd"
+PokerManager="*res://scripts/PokerManager.gd"
 
 [display]
 
 window/size/viewport_width=960
 window/size/viewport_height=720
 window/stretch/mode="canvas_items"
-
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/godotbridge/plugin.cfg")

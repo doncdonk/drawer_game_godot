@@ -110,6 +110,17 @@ theme_override_colors/font_color = Color(0.4, 0.9, 0.7, 1)
 theme_override_font_sizes/font_size = 13
 text = "🎒 ジャンクボックス"
 
+[node name="NikitaTaskButton" type="Button" parent="VBox/MarginContainer/VBoxInner/ButtonRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.75, 0.3, 1)
+theme_override_font_sizes/font_size = 13
+text = "🧔 ニキータ(タスク)"
+
+[node name="SettingsButton" type="Button" parent="VBox/MarginContainer/VBoxInner/ButtonRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "⚙️ 設定"
+
 [node name="RulesButton" type="Button" parent="VBox/MarginContainer/VBoxInner/ButtonRow" unique_id=809052574]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
@@ -214,6 +225,20 @@ layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
 theme_override_font_sizes/font_size = 14
 text = "🎰 スロット（¥50,000）"
+
+[node name="BJButton" type="Button" parent="VBox/MarginContainer/VBoxInner/ActionButtons"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 1.0, 0.6, 1)
+theme_override_font_sizes/font_size = 14
+text = "🃏 ブラックジャック（¥50,000）"
+
+[node name="PokerButton" type="Button" parent="VBox/MarginContainer/VBoxInner/ActionButtons"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1.0, 0.65, 0.9, 1)
+theme_override_font_sizes/font_size = 14
+text = "🂡 ポーカー（¥50,000）"
 
 [node name="RestartButton" type="Button" parent="VBox/MarginContainer/VBoxInner/ActionButtons" unique_id=1649334119]
 visible = false
@@ -876,22 +901,22 @@ theme_override_font_sizes/font_size = 14
 text = "🧔 ニキータ"
 horizontal_alignment = 1
 
-[node name="NikitaIconLabel" type="Label" parent="JunkBoxOverlay/Panel/VBox/ContentHBox/NikitaPane" unique_id=572255588]
+[node name="NikitaIconLabel" type="Label" parent="JunkBoxOverlay/Panel/VBox/ContentHBox/NikitaPane"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 44
 text = "🧔"
 horizontal_alignment = 1
 
-[node name="NikitaSubLabel" type="Label" parent="JunkBoxOverlay/Panel/VBox/ContentHBox/NikitaPane" unique_id=1554051724]
+[node name="NikitaSubLabel" type="Label" parent="JunkBoxOverlay/Panel/VBox/ContentHBox/NikitaPane"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.75, 0.85, 1)
 theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.7, 0.75, 0.85, 1)
 text = "↓ アイテムをドラッグして売却ボックスへ"
 horizontal_alignment = 1
 
-[node name="NikitaGridContainer" type="Control" parent="JunkBoxOverlay/Panel/VBox/ContentHBox/NikitaPane" unique_id=894363483]
-custom_minimum_size = Vector2(290, 250)
+[node name="NikitaGridContainer" type="Control" parent="JunkBoxOverlay/Panel/VBox/ContentHBox/NikitaPane"]
 layout_mode = 2
+custom_minimum_size = Vector2(290, 250)
 
 [node name="SellButton" type="Button" parent="JunkBoxOverlay/Panel/VBox/ContentHBox/NikitaPane" unique_id=586902774]
 layout_mode = 2
@@ -905,3 +930,511 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.88, 1, 1)
 theme_override_font_sizes/font_size = 13
 horizontal_alignment = 1
+
+[node name="NikitaTaskOverlay" type="CanvasLayer" parent="."]
+visible = false
+
+[node name="DimBG" type="ColorRect" parent="NikitaTaskOverlay"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.88)
+
+[node name="Panel" type="PanelContainer" parent="NikitaTaskOverlay"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 60.0
+offset_top = 30.0
+offset_right = -60.0
+offset_bottom = -30.0
+
+[node name="VBox" type="VBoxContainer" parent="NikitaTaskOverlay/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="HeaderRow" type="HBoxContainer" parent="NikitaTaskOverlay/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="NikitaIcon" type="Label" parent="NikitaTaskOverlay/Panel/VBox/HeaderRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "🧔"
+
+[node name="TitleVBox" type="VBoxContainer" parent="NikitaTaskOverlay/Panel/VBox/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Title" type="Label" parent="NikitaTaskOverlay/Panel/VBox/HeaderRow/TitleVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 0.75, 0.3, 1)
+text = "ニキータ"
+
+[node name="SubTitle" type="Label" parent="NikitaTaskOverlay/Panel/VBox/HeaderRow/TitleVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.7, 0.75, 0.85, 1)
+text = "タスクを完了して報酬を獲得しよう"
+
+[node name="CloseButton" type="Button" parent="NikitaTaskOverlay/Panel/VBox/HeaderRow"]
+layout_mode = 2
+text = "✕ 閉じる"
+theme_override_font_sizes/font_size = 13
+
+[node name="Divider" type="HSeparator" parent="NikitaTaskOverlay/Panel/VBox"]
+layout_mode = 2
+
+[node name="ResultLabel" type="Label" parent="NikitaTaskOverlay/Panel/VBox"]
+layout_mode = 2
+text = ""
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+autowrap_mode = 3
+
+[node name="TaskScroll" type="ScrollContainer" parent="NikitaTaskOverlay/Panel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="TaskList" type="VBoxContainer" parent="NikitaTaskOverlay/Panel/VBox/TaskScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="ConfirmDialog" type="PanelContainer" parent="NikitaTaskOverlay/Panel/VBox"]
+layout_mode = 2
+visible = false
+
+[node name="ConfirmVBox" type="VBoxContainer" parent="NikitaTaskOverlay/Panel/VBox/ConfirmDialog"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ConfirmLabel" type="Label" parent="NikitaTaskOverlay/Panel/VBox/ConfirmDialog/ConfirmVBox"]
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 13
+autowrap_mode = 3
+text = ""
+
+[node name="ConfirmBtnRow" type="HBoxContainer" parent="NikitaTaskOverlay/Panel/VBox/ConfirmDialog/ConfirmVBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="YesButton" type="Button" parent="NikitaTaskOverlay/Panel/VBox/ConfirmDialog/ConfirmVBox/ConfirmBtnRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
+theme_override_font_sizes/font_size = 13
+text = "✅ はい、破棄する"
+
+[node name="NoButton" type="Button" parent="NikitaTaskOverlay/Panel/VBox/ConfirmDialog/ConfirmVBox/ConfirmBtnRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "❌ キャンセル"
+
+[node name="SettingsOverlay" type="CanvasLayer" parent="."]
+visible = false
+
+[node name="DimBG" type="ColorRect" parent="SettingsOverlay"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.88)
+
+[node name="Panel" type="PanelContainer" parent="SettingsOverlay"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -240.0
+offset_top = -200.0
+offset_right = 240.0
+offset_bottom = 200.0
+
+[node name="VBox" type="VBoxContainer" parent="SettingsOverlay/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="HeaderRow" type="HBoxContainer" parent="SettingsOverlay/Panel/VBox"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="SettingsOverlay/Panel/VBox/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 1)
+text = "⚙️ 設定"
+
+[node name="CloseButton" type="Button" parent="SettingsOverlay/Panel/VBox/HeaderRow"]
+layout_mode = 2
+text = "✕ 閉じる"
+theme_override_font_sizes/font_size = 13
+
+[node name="Divider" type="HSeparator" parent="SettingsOverlay/Panel/VBox"]
+layout_mode = 2
+
+[node name="SERow" type="HBoxContainer" parent="SettingsOverlay/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="SELabel" type="Label" parent="SettingsOverlay/Panel/VBox/SERow"]
+layout_mode = 2
+custom_minimum_size = Vector2(100, 0)
+theme_override_font_sizes/font_size = 14
+text = "🔊 効果音"
+vertical_alignment = 1
+
+[node name="SESlider" type="HSlider" parent="SettingsOverlay/Panel/VBox/SERow"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 0.0
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="SEValueLabel" type="Label" parent="SettingsOverlay/Panel/VBox/SERow"]
+layout_mode = 2
+custom_minimum_size = Vector2(42, 0)
+theme_override_font_sizes/font_size = 13
+horizontal_alignment = 2
+text = "100%"
+
+[node name="BJOverlay" type="CanvasLayer" parent="."]
+visible = false
+
+[node name="DimBG" type="ColorRect" parent="BJOverlay"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0.12, 0.05, 0.95)
+
+[node name="Panel" type="PanelContainer" parent="BJOverlay"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 10.0
+offset_right = -20.0
+offset_bottom = -10.0
+
+[node name="VBox" type="VBoxContainer" parent="BJOverlay/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HeaderRow" type="HBoxContainer" parent="BJOverlay/Panel/VBox"]
+layout_mode = 2
+
+[node name="DealerIcon" type="Label" parent="BJOverlay/Panel/VBox/HeaderRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "🧔"
+
+[node name="TitleVBox" type="VBoxContainer" parent="BJOverlay/Panel/VBox/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BJTitle" type="Label" parent="BJOverlay/Panel/VBox/HeaderRow/TitleVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.5, 1.0, 0.6, 1)
+text = "ブラックジャック  ディーラー：ニキータ"
+
+[node name="BJCost" type="Label" parent="BJOverlay/Panel/VBox/HeaderRow/TitleVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.8, 0.85, 0.9, 1)
+text = "ベット: ¥50,000"
+
+[node name="BJStashLabel" type="Label" parent="BJOverlay/Panel/VBox/HeaderRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+text = "💰 ¥0"
+
+[node name="BJCloseBtn" type="Button" parent="BJOverlay/Panel/VBox/HeaderRow"]
+layout_mode = 2
+text = "✕ 閉じる"
+theme_override_font_sizes/font_size = 13
+
+[node name="Divider0" type="HSeparator" parent="BJOverlay/Panel/VBox"]
+layout_mode = 2
+
+[node name="DealerArea" type="VBoxContainer" parent="BJOverlay/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="DealerLabel" type="Label" parent="BJOverlay/Panel/VBox/DealerArea"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(1, 0.75, 0.3, 1)
+text = "🧔 ニキータ（ディーラー）"
+
+[node name="DealerScoreLabel" type="Label" parent="BJOverlay/Panel/VBox/DealerArea"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.8, 0.85, 0.9, 1)
+text = "スコア: ？"
+
+[node name="DealerCardRow" type="HBoxContainer" parent="BJOverlay/Panel/VBox/DealerArea"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Divider1" type="HSeparator" parent="BJOverlay/Panel/VBox"]
+layout_mode = 2
+
+[node name="PlayerArea" type="VBoxContainer" parent="BJOverlay/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="PlayerLabel" type="Label" parent="BJOverlay/Panel/VBox/PlayerArea"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.5, 1.0, 0.6, 1)
+text = "👤 あなた（プレイヤー）"
+
+[node name="PlayerScoreLabel" type="Label" parent="BJOverlay/Panel/VBox/PlayerArea"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.8, 0.85, 0.9, 1)
+text = "スコア: 0"
+
+[node name="PlayerCardRow" type="HBoxContainer" parent="BJOverlay/Panel/VBox/PlayerArea"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Divider2" type="HSeparator" parent="BJOverlay/Panel/VBox"]
+layout_mode = 2
+
+[node name="ResultArea" type="VBoxContainer" parent="BJOverlay/Panel/VBox"]
+layout_mode = 2
+visible = false
+theme_override_constants/separation = 4
+
+[node name="ResultLabel" type="Label" parent="BJOverlay/Panel/VBox/ResultArea"]
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 26
+text = ""
+
+[node name="PayoutLabel" type="Label" parent="BJOverlay/Panel/VBox/ResultArea"]
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+text = ""
+
+[node name="ActionRow" type="HBoxContainer" parent="BJOverlay/Panel/VBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 20
+
+[node name="HitButton" type="Button" parent="BJOverlay/Panel/VBox/ActionRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.5, 1.0, 0.6, 1)
+text = "👆 ヒット"
+custom_minimum_size = Vector2(130, 48)
+
+[node name="StandButton" type="Button" parent="BJOverlay/Panel/VBox/ActionRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(1, 0.6, 0.3, 1)
+text = "✋ スタンド"
+custom_minimum_size = Vector2(130, 48)
+
+[node name="PlayAgainButton" type="Button" parent="BJOverlay/Panel/VBox/ActionRow"]
+layout_mode = 2
+visible = false
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+text = "🃏 もう一度（¥50,000）"
+custom_minimum_size = Vector2(200, 48)
+
+[node name="BJStatusLabel" type="Label" parent="BJOverlay/Panel/VBox"]
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.8, 0.85, 0.9, 1)
+text = ""
+
+[node name="PokerOverlay" type="CanvasLayer" parent="."]
+visible = false
+
+[node name="DimBG" type="ColorRect" parent="PokerOverlay"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.04, 0.08, 0.04, 0.96)
+
+[node name="Panel" type="PanelContainer" parent="PokerOverlay"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 8.0
+offset_right = -16.0
+offset_bottom = -8.0
+
+[node name="VBox" type="VBoxContainer" parent="PokerOverlay/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HeaderRow" type="HBoxContainer" parent="PokerOverlay/Panel/VBox"]
+layout_mode = 2
+
+[node name="DealerIcon" type="Label" parent="PokerOverlay/Panel/VBox/HeaderRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "🧔"
+
+[node name="TitleVBox" type="VBoxContainer" parent="PokerOverlay/Panel/VBox/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PokerTitle" type="Label" parent="PokerOverlay/Panel/VBox/HeaderRow/TitleVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(1.0, 0.65, 0.9, 1)
+text = "5カードドローポーカー  ディーラー：ニキータ"
+
+[node name="PokerPotLabel" type="Label" parent="PokerOverlay/Panel/VBox/HeaderRow/TitleVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+text = "ポット: ¥100,000"
+
+[node name="PokerStashLabel" type="Label" parent="PokerOverlay/Panel/VBox/HeaderRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+text = "💰 ¥0"
+
+[node name="PokerCloseBtn" type="Button" parent="PokerOverlay/Panel/VBox/HeaderRow"]
+layout_mode = 2
+text = "✕ 閉じる"
+theme_override_font_sizes/font_size = 13
+
+[node name="Div0" type="HSeparator" parent="PokerOverlay/Panel/VBox"]
+layout_mode = 2
+
+[node name="DealerArea" type="VBoxContainer" parent="PokerOverlay/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="DealerLabel" type="Label" parent="PokerOverlay/Panel/VBox/DealerArea"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(1, 0.75, 0.3, 1)
+text = "🧔 ニキータ（ディーラー）"
+
+[node name="DealerRankLabel" type="Label" parent="PokerOverlay/Panel/VBox/DealerArea"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.8, 0.85, 0.9, 1)
+text = ""
+
+[node name="DealerCardRow" type="HBoxContainer" parent="PokerOverlay/Panel/VBox/DealerArea"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Div1" type="HSeparator" parent="PokerOverlay/Panel/VBox"]
+layout_mode = 2
+
+[node name="PlayerArea" type="VBoxContainer" parent="PokerOverlay/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="PlayerLabel" type="Label" parent="PokerOverlay/Panel/VBox/PlayerArea"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.5, 1.0, 0.6, 1)
+text = "👤 あなた（プレイヤー）"
+
+[node name="PlayerRankLabel" type="Label" parent="PokerOverlay/Panel/VBox/PlayerArea"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.8, 0.85, 0.9, 1)
+text = ""
+
+[node name="PlayerCardRow" type="HBoxContainer" parent="PokerOverlay/Panel/VBox/PlayerArea"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="DrawHintLabel" type="Label" parent="PokerOverlay/Panel/VBox/PlayerArea"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.7, 0.85, 1.0, 1)
+text = ""
+autowrap_mode = 3
+
+[node name="Div2" type="HSeparator" parent="PokerOverlay/Panel/VBox"]
+layout_mode = 2
+
+[node name="ResultArea" type="VBoxContainer" parent="PokerOverlay/Panel/VBox"]
+layout_mode = 2
+visible = false
+theme_override_constants/separation = 4
+
+[node name="PokerResultLabel" type="Label" parent="PokerOverlay/Panel/VBox/ResultArea"]
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 24
+text = ""
+
+[node name="PokerPayoutLabel" type="Label" parent="PokerOverlay/Panel/VBox/ResultArea"]
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+text = ""
+
+[node name="ActionRow" type="HBoxContainer" parent="PokerOverlay/Panel/VBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="CheckButton" type="Button" parent="PokerOverlay/Panel/VBox/ActionRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "✔ チェック"
+custom_minimum_size = Vector2(110, 44)
+
+[node name="RaiseButton" type="Button" parent="PokerOverlay/Panel/VBox/ActionRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+text = "↑ レイズ"
+custom_minimum_size = Vector2(110, 44)
+
+[node name="FoldButton" type="Button" parent="PokerOverlay/Panel/VBox/ActionRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
+text = "✖ フォールド"
+custom_minimum_size = Vector2(110, 44)
+
+[node name="DrawButton" type="Button" parent="PokerOverlay/Panel/VBox/ActionRow"]
+layout_mode = 2
+visible = false
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.5, 0.9, 1.0, 1)
+text = "🔄 カードを交換"
+custom_minimum_size = Vector2(150, 44)
+
+[node name="PlayAgainButton" type="Button" parent="PokerOverlay/Panel/VBox/ActionRow"]
+layout_mode = 2
+visible = false
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+text = "🂡 もう一度（¥50,000）"
+custom_minimum_size = Vector2(180, 44)
+
+[node name="PokerStatusLabel" type="Label" parent="PokerOverlay/Panel/VBox"]
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.75, 0.85, 1.0, 1)
+text = ""

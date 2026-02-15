@@ -4,6 +4,7 @@ extends Control
 
 const JunkBoxGridScene := preload("res://scripts/JunkBoxGrid.gd")
 const NikitaGridScene  := preload("res://scripts/NikitaGrid.gd")
+const CardNodeScene    := preload("res://scripts/CardNode.gd")
 
 # ── ノード参照 ──────────────────────────────
 @onready var label_round      := $VBox/MarginContainer/VBoxInner/TopBar/LabelRound
@@ -25,7 +26,45 @@ const NikitaGridScene  := preload("res://scripts/NikitaGrid.gd")
 @onready var ult_reset_btn    := $VBox/MarginContainer/VBoxInner/UltButtons/ResetButton
 @onready var next_btn         := $VBox/MarginContainer/VBoxInner/ActionButtons/NextButton
 @onready var slot_btn         := $VBox/MarginContainer/VBoxInner/ActionButtons/SlotButton
+@onready var bj_btn           := $VBox/MarginContainer/VBoxInner/ActionButtons/BJButton
+@onready var poker_btn        := $VBox/MarginContainer/VBoxInner/ActionButtons/PokerButton
 @onready var restart_btn      := $VBox/MarginContainer/VBoxInner/ActionButtons/RestartButton
+
+# ── ブラックジャックオーバーレイ ──────────
+@onready var bj_overlay         := $BJOverlay
+@onready var bj_close_btn       := $BJOverlay/Panel/VBox/HeaderRow/BJCloseBtn
+@onready var bj_dealer_card_row := $BJOverlay/Panel/VBox/DealerArea/DealerCardRow
+@onready var bj_player_card_row := $BJOverlay/Panel/VBox/PlayerArea/PlayerCardRow
+@onready var bj_dealer_score    := $BJOverlay/Panel/VBox/DealerArea/DealerScoreLabel
+@onready var bj_player_score    := $BJOverlay/Panel/VBox/PlayerArea/PlayerScoreLabel
+@onready var bj_result_area     := $BJOverlay/Panel/VBox/ResultArea
+@onready var bj_result_lbl      := $BJOverlay/Panel/VBox/ResultArea/ResultLabel
+@onready var bj_payout_lbl      := $BJOverlay/Panel/VBox/ResultArea/PayoutLabel
+@onready var bj_hit_btn         := $BJOverlay/Panel/VBox/ActionRow/HitButton
+@onready var bj_stand_btn       := $BJOverlay/Panel/VBox/ActionRow/StandButton
+@onready var bj_again_btn       := $BJOverlay/Panel/VBox/ActionRow/PlayAgainButton
+@onready var bj_status_lbl      := $BJOverlay/Panel/VBox/BJStatusLabel
+@onready var bj_stash_lbl       := $BJOverlay/Panel/VBox/HeaderRow/BJStashLabel
+
+# ── ポーカーオーバーレイ ──────────────────
+@onready var poker_overlay        := $PokerOverlay
+@onready var poker_close_btn      := $PokerOverlay/Panel/VBox/HeaderRow/PokerCloseBtn
+@onready var poker_pot_lbl        := $PokerOverlay/Panel/VBox/HeaderRow/TitleVBox/PokerPotLabel
+@onready var poker_dealer_row     := $PokerOverlay/Panel/VBox/DealerArea/DealerCardRow
+@onready var poker_player_row     := $PokerOverlay/Panel/VBox/PlayerArea/PlayerCardRow
+@onready var poker_dealer_rank    := $PokerOverlay/Panel/VBox/DealerArea/DealerRankLabel
+@onready var poker_player_rank    := $PokerOverlay/Panel/VBox/PlayerArea/PlayerRankLabel
+@onready var poker_draw_hint      := $PokerOverlay/Panel/VBox/PlayerArea/DrawHintLabel
+@onready var poker_result_area    := $PokerOverlay/Panel/VBox/ResultArea
+@onready var poker_result_lbl     := $PokerOverlay/Panel/VBox/ResultArea/PokerResultLabel
+@onready var poker_payout_lbl     := $PokerOverlay/Panel/VBox/ResultArea/PokerPayoutLabel
+@onready var poker_check_btn      := $PokerOverlay/Panel/VBox/ActionRow/CheckButton
+@onready var poker_raise_btn      := $PokerOverlay/Panel/VBox/ActionRow/RaiseButton
+@onready var poker_fold_btn       := $PokerOverlay/Panel/VBox/ActionRow/FoldButton
+@onready var poker_draw_btn       := $PokerOverlay/Panel/VBox/ActionRow/DrawButton
+@onready var poker_again_btn      := $PokerOverlay/Panel/VBox/ActionRow/PlayAgainButton
+@onready var poker_status_lbl     := $PokerOverlay/Panel/VBox/PokerStatusLabel
+@onready var poker_stash_lbl      := $PokerOverlay/Panel/VBox/HeaderRow/PokerStashLabel
 
 @onready var loot_panel       := $VBox/MarginContainer/VBoxInner/LootPanel
 @onready var loot_title       := $VBox/MarginContainer/VBoxInner/LootPanel/LootVBox/LootTitle
@@ -76,11 +115,28 @@ var _slot_reel_looping := false   # リール回転音ループ制御
 @onready var junkbox_close_btn  := $JunkBoxOverlay/Panel/VBox/HeaderRow/CloseButton
 @onready var junkbox_info_lbl   := $JunkBoxOverlay/Panel/VBox/InfoLabel
 @onready var junkbox_btn        := $VBox/MarginContainer/VBoxInner/ButtonRow/JunkBoxButton
+@onready var nikita_task_btn    := $VBox/MarginContainer/VBoxInner/ButtonRow/NikitaTaskButton
 @onready var nikita_grid_node   := $JunkBoxOverlay/Panel/VBox/ContentHBox/NikitaPane/NikitaGridContainer
 @onready var nikita_sell_btn    := $JunkBoxOverlay/Panel/VBox/ContentHBox/NikitaPane/SellButton
 var _junkbox_grid               = null
 var _nikita_grid                = null
 var _nikita_selected_entry: Dictionary = {}
+
+# ── ニキータタスクオーバーレイ ─────────────
+@onready var nikita_task_overlay  := $NikitaTaskOverlay
+@onready var nikita_task_list     := $NikitaTaskOverlay/Panel/VBox/TaskScroll/TaskList
+@onready var nikita_task_close    := $NikitaTaskOverlay/Panel/VBox/HeaderRow/CloseButton
+@onready var nikita_task_result   := $NikitaTaskOverlay/Panel/VBox/ResultLabel
+@onready var task_confirm_dialog  := $NikitaTaskOverlay/Panel/VBox/ConfirmDialog
+@onready var task_confirm_label   := $NikitaTaskOverlay/Panel/VBox/ConfirmDialog/ConfirmVBox/ConfirmLabel
+@onready var task_confirm_yes     := $NikitaTaskOverlay/Panel/VBox/ConfirmDialog/ConfirmVBox/ConfirmBtnRow/YesButton
+@onready var task_confirm_no      := $NikitaTaskOverlay/Panel/VBox/ConfirmDialog/ConfirmVBox/ConfirmBtnRow/NoButton
+
+# ── 設定オーバーレイ ──────────────────────
+@onready var settings_overlay     := $SettingsOverlay
+@onready var settings_close_btn   := $SettingsOverlay/Panel/VBox/HeaderRow/CloseButton
+@onready var se_slider            := $SettingsOverlay/Panel/VBox/SERow/SESlider
+@onready var se_value_lbl         := $SettingsOverlay/Panel/VBox/SERow/SEValueLabel
 
 # ── 格納フェーズオーバーレイ ──────────────────
 @onready var stash_phase_overlay  := $StashPhaseOverlay
@@ -147,6 +203,18 @@ func _ready() -> void:
 
 	# スロット
 	slot_btn.pressed.connect(_on_slot_btn_pressed)
+	bj_btn.pressed.connect(_on_bj_btn_pressed)
+	bj_close_btn.pressed.connect(_on_bj_close)
+	bj_hit_btn.pressed.connect(_on_bj_hit)
+	bj_stand_btn.pressed.connect(_on_bj_stand)
+	bj_again_btn.pressed.connect(_on_bj_play_again)
+	poker_btn.pressed.connect(_on_poker_btn_pressed)
+	poker_close_btn.pressed.connect(_on_poker_close)
+	poker_check_btn.pressed.connect(_on_poker_check)
+	poker_raise_btn.pressed.connect(_on_poker_raise)
+	poker_fold_btn.pressed.connect(_on_poker_fold)
+	poker_draw_btn.pressed.connect(_on_poker_draw)
+	poker_again_btn.pressed.connect(_on_poker_play_again)
 	slot_spin_btn.pressed.connect(_on_slot_spin)
 	slot_close_btn.pressed.connect(_on_slot_close)
 	# リール回転音：再生終了時に自動ループ（_slot_reel_loopingフラグで制御）
@@ -166,6 +234,20 @@ func _ready() -> void:
 	junkbox_btn.pressed.connect(_on_junkbox_btn_pressed)
 	junkbox_close_btn.pressed.connect(_on_junkbox_close)
 	nikita_sell_btn.pressed.connect(_on_nikita_sell)
+	nikita_task_btn.pressed.connect(_on_nikita_task_btn_pressed)
+	nikita_task_close.pressed.connect(func(): nikita_task_overlay.hide())
+	task_confirm_no.pressed.connect(_on_discard_cancel)
+	TaskManager.task_completed.connect(_on_task_completed)
+	TaskManager.tasks_updated.connect(_on_tasks_updated)
+
+	# 設定
+	var settings_btn := $VBox/MarginContainer/VBoxInner/ButtonRow/SettingsButton
+	settings_btn.pressed.connect(_on_settings_btn_pressed)
+	settings_close_btn.pressed.connect(func(): settings_overlay.hide())
+	se_slider.value_changed.connect(_on_se_volume_changed)
+	# 保存済み音量を復元
+	var saved_vol: float = ProjectSettings.get_setting("audio/se_volume", 1.0) if false else 1.0
+	se_slider.value = saved_vol
 
 	# ニキータグリッド
 	_nikita_grid = NikitaGridScene.new()
@@ -189,6 +271,7 @@ func _ready() -> void:
 	_stash_phase_grid.connect("pending_placed",   _on_stash_pending_placed)
 	_stash_phase_grid.connect("pending_returned", _on_stash_pending_returned)
 	_stash_phase_grid.connect("layout_changed",   _refresh_stash_sell_preview)
+	task_confirm_yes.pressed.connect(_on_discard_confirmed)
 
 	# スロット リールラベルをコードで収集
 	for r in 3:
@@ -206,6 +289,8 @@ func _start_session() -> void:
 	peek_overlay.hide()
 	next_btn.hide()
 	slot_btn.hide()
+	bj_btn.hide()
+	poker_btn.hide()
 	restart_btn.hide()
 	loot_panel.show()
 	inventory_panel.show()
@@ -219,6 +304,8 @@ func _start_play() -> void:
 	peek_overlay.hide()
 	next_btn.hide()
 	slot_btn.hide()
+	bj_btn.hide()
+	poker_btn.hide()
 	restart_btn.hide()
 	loot_panel.show()
 	inventory_panel.show()
@@ -307,6 +394,7 @@ func _refresh_ui() -> void:
 	_refresh_inventory()
 
 func _update_stash_display() -> void:
+	var text := "💰 ¥%s" % _fmt(GameState.stash)
 	stash_amount.text = "¥%s" % _fmt(GameState.stash)
 	if GameState.stash < GameState.PLAY_COST * 2:
 		stash_amount.add_theme_color_override("font_color", Color("#ff6b6b"))
@@ -315,6 +403,9 @@ func _update_stash_display() -> void:
 	else:
 		stash_amount.add_theme_color_override("font_color", Color(0.3, 0.95, 0.5, 1))
 	label_play_count.text = "探索回数: %d回" % GameState.play_count
+	# BJ・Pokerオーバーレイのスタッシュ表示も更新
+	bj_stash_lbl.text    = text
+	poker_stash_lbl.text = text
 
 func _update_ult_buttons() -> void:
 	var can_use: bool = not GameState.ult_used and GameState.current_round_items.size() == 0
@@ -414,6 +505,7 @@ func _on_round_ended(_items: Array) -> void:
 	if GameState.current_round < GameState.MAX_ROUNDS:
 		next_btn.show()
 	else:
+		TaskManager.on_explore_success()
 		GameState.finish_play()
 
 # ── 次のラウンド ───────────────────────────
@@ -451,6 +543,8 @@ func _on_play_finished(earned: int, new_stash: int, trap_damage: int) -> void:
 	restart_btn.show()
 	# スタッシュが SLOT_COST 以上あるときだけスロットボタンを表示
 	slot_btn.visible = can_continue and GameState.stash >= GameState.SLOT_COST
+	bj_btn.visible = can_continue and GameState.stash >= BlackjackManager.BET
+	poker_btn.visible = can_continue and GameState.stash >= PokerManager.BET
 
 func _build_ranking_list(current_stash: int) -> void:
 	for c in ranking_list.get_children():
@@ -488,6 +582,8 @@ func _on_restart_pressed() -> void:
 	if GameState.can_continue():
 		_start_play()
 	else:
+		TaskManager.reset()
+		JunkBox.reset()
 		_start_session()
 
 # ── ウルト: 中身を見る ──────────────────────
@@ -815,6 +911,7 @@ func _on_slot_spin() -> void:
 		sfx_slot_reel.stop()
 
 	_update_stash_display()
+	TaskManager.on_slot_spin()
 	# スロット獲得アイテムを格納フェーズ待ちリストに追加（GameState.inventoryからは除外）
 	for item: Dictionary in loot:
 		if not item.is_empty():
@@ -859,6 +956,8 @@ func _on_slot_close() -> void:
 		sfx_slot_reel.stop()
 	slot_overlay.hide()
 	slot_btn.visible = GameState.stash >= GameState.SLOT_COST
+	bj_btn.visible = GameState.stash >= BlackjackManager.BET
+	poker_btn.visible = GameState.stash >= PokerManager.BET
 	_update_stash_display()
 	# スロットで獲得したアイテムがあれば格納フェーズへ
 	if not _slot_pending_loot.is_empty():
@@ -922,6 +1021,150 @@ func _on_nikita_sell() -> void:
 	_update_stash_display()
 	junkbox_info_lbl.text = "💰 売却完了: %s → ¥%s" % ["、".join(names), _fmt(total)]
 	_refresh_junkbox_info.call_deferred()
+
+# ── ニキータタスク ─────────────────────────
+func _on_nikita_task_btn_pressed() -> void:
+	_build_task_list()
+	nikita_task_result.text = ""
+	nikita_task_overlay.show()
+
+func _on_task_completed(task: Dictionary, reward: int) -> void:
+	_update_stash_display()
+	nikita_task_result.text = "✅ タスク完了！  報酬 ¥%s を受領しました 🎉" % _fmt(reward)
+	_build_task_list()
+
+func _on_tasks_updated() -> void:
+	if nikita_task_overlay.visible:
+		_build_task_list()
+
+func _build_task_list() -> void:
+	for c in nikita_task_list.get_children():
+		c.queue_free()
+	for task: Dictionary in TaskManager.active_tasks:
+		var card := _make_task_card(task)
+		nikita_task_list.add_child(card)
+
+func _make_task_card(task: Dictionary) -> Control:
+	var panel := PanelContainer.new()
+	var sb    := StyleBoxFlat.new()
+	sb.set_corner_radius_all(6)
+	var diff: String = task.get("difficulty", "normal")
+	var diff_color := Color("#44aa44") if diff == "easy" else (Color("#ccaa00") if diff == "normal" else Color("#cc3333"))
+	sb.bg_color     = Color(diff_color.r, diff_color.g, diff_color.b, 0.12)
+	sb.border_color = diff_color
+	sb.border_width_left   = 4
+	sb.border_width_right  = 0
+	sb.border_width_top    = 0
+	sb.border_width_bottom = 0
+	panel.add_theme_stylebox_override("panel", sb)
+
+	var hbox := HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 10)
+
+	var info_vbox := VBoxContainer.new()
+	info_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	info_vbox.add_theme_constant_override("separation", 3)
+
+	var diff_lbl := Label.new()
+	diff_lbl.text = TaskManager.difficulty_label(task)
+	diff_lbl.add_theme_font_size_override("font_size", 11)
+
+	var desc_lbl := Label.new()
+	desc_lbl.text = TaskManager.describe(task)
+	desc_lbl.add_theme_font_size_override("font_size", 13)
+	desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+
+	var reward_lbl := Label.new()
+	reward_lbl.text = "報酬: ¥%s" % _fmt(int(task["reward"]))
+	reward_lbl.add_theme_font_size_override("font_size", 12)
+	reward_lbl.add_theme_color_override("font_color", Color("#ffd700"))
+
+	info_vbox.add_child(diff_lbl)
+	info_vbox.add_child(desc_lbl)
+	info_vbox.add_child(reward_lbl)
+
+	var btn_vbox := VBoxContainer.new()
+	btn_vbox.add_theme_constant_override("separation", 4)
+
+	# 納品タスクのみ「納品する」ボタン
+	var is_deliver: bool = task["type"] in ["deliver_icon", "deliver_name", "deliver_rarity"]
+	if is_deliver:
+		var deliver_btn := Button.new()
+		deliver_btn.text = "📦 納品する"
+		deliver_btn.add_theme_font_size_override("font_size", 12)
+		deliver_btn.add_theme_color_override("font_color", Color("#44ff88"))
+		var t := task
+		deliver_btn.pressed.connect(func(): _on_deliver_pressed(t))
+		btn_vbox.add_child(deliver_btn)
+
+	# 破棄ボタン（全タスク共通）
+	var discard_btn := Button.new()
+	var cost: int = TaskManager.get_discard_cost(task)
+	discard_btn.text = "🗑 破棄 (¥%s)" % _fmt(cost)
+	discard_btn.add_theme_font_size_override("font_size", 11)
+	discard_btn.add_theme_color_override("font_color", Color("#ff6666"))
+	var t2 := task
+	discard_btn.pressed.connect(func(): _on_discard_pressed(t2))
+	btn_vbox.add_child(discard_btn)
+
+	hbox.add_child(info_vbox)
+	hbox.add_child(btn_vbox)
+	panel.add_child(hbox)
+	return panel
+
+func _on_deliver_pressed(task: Dictionary) -> void:
+	var missing: Array = TaskManager.try_deliver(task)
+	if missing.is_empty():
+		pass
+	else:
+		nikita_task_result.text = "⚠️ 不足: %s があと %d 個必要です" % [missing[0], missing.size()]
+
+# ── タスク破棄 ────────────────────────────
+var _pending_discard_task: Dictionary = {}
+
+func _on_discard_pressed(task: Dictionary) -> void:
+	_pending_discard_task = task
+	var cost: int = TaskManager.get_discard_cost(task)
+	task_confirm_label.text = (
+		"このタスクを破棄しますか？\n\n"
+		+ "「%s」\n\n" % TaskManager.describe(task)
+		+ "[color=#ff6666]破棄コスト: ¥%s[/color]\n" % _fmt(cost)
+		+ "（スタッシュから差し引かれます）"
+	)
+	# リッチテキスト対応に切り替え
+	task_confirm_label.text = (
+		"このタスクを破棄しますか？\n"
+		+ "「%s」\n" % TaskManager.describe(task)
+		+ "破棄コスト: ¥%s（スタッシュから差し引かれます）" % _fmt(cost)
+	)
+	task_confirm_dialog.show()
+
+func _on_discard_confirmed() -> void:
+	task_confirm_dialog.hide()
+	if _pending_discard_task.is_empty():
+		return
+	var ok: bool = TaskManager.discard_task(_pending_discard_task)
+	_pending_discard_task = {}
+	if ok:
+		nikita_task_result.text = "🗑 タスクを破棄しました"
+		_update_stash_display()
+	else:
+		nikita_task_result.text = "⚠️ スタッシュが不足しています"
+
+func _on_discard_cancel() -> void:
+	task_confirm_dialog.hide()
+	_pending_discard_task = {}
+
+# ── 設定 ─────────────────────────────────
+func _on_settings_btn_pressed() -> void:
+	settings_overlay.show()
+
+func _on_se_volume_changed(value: float) -> void:
+	se_value_lbl.text = "%d%%" % int(value * 100)
+	# Godot の AudioServer バス "Master" の音量を dB に変換して設定
+	AudioServer.set_bus_volume_db(0, linear_to_db(value))
+	# 0のときミュート
+	AudioServer.set_bus_mute(0, value <= 0.0)
 
 func _refresh_junkbox_info() -> void:
 	junkbox_info_lbl.text = _get_junkbox_usage_text()
@@ -1067,3 +1310,246 @@ func _shorten(s: String) -> String:
 	if s.length() > 8:
 		return s.substr(0, 7) + "…"
 	return s
+
+# ═══════════════════════════════════════════════
+# ── ブラックジャック ────────────────────────────
+# ═══════════════════════════════════════════════
+func _on_bj_btn_pressed() -> void:
+	if GameState.stash < BlackjackManager.BET:
+		return
+	GameState.stash -= BlackjackManager.BET
+	_update_stash_display()
+	BlackjackManager.start_game()
+	_bj_refresh_ui()
+	bj_overlay.show()
+
+func _on_bj_close() -> void:
+	bj_overlay.hide()
+
+func _on_bj_hit() -> void:
+	BlackjackManager.hit()
+	_bj_refresh_ui()
+
+func _on_bj_stand() -> void:
+	BlackjackManager.stand()
+	_bj_refresh_ui()
+
+func _on_bj_play_again() -> void:
+	if GameState.stash < BlackjackManager.BET:
+		bj_status_lbl.text = "⚠️ 残高不足（¥%s 必要）" % _fmt(BlackjackManager.BET)
+		return
+	GameState.stash -= BlackjackManager.BET
+	_update_stash_display()
+	BlackjackManager.start_game()
+	_bj_refresh_ui()
+
+func _bj_refresh_ui() -> void:
+	var bj := BlackjackManager
+	var is_result: bool = bj.state == BlackjackManager.State.RESULT
+
+	# カードを再構築
+	_bj_build_cards(bj_dealer_card_row, bj.dealer_hand, not bj.dealer_revealed)
+	_bj_build_cards(bj_player_card_row, bj.player_hand, false)
+
+	# スコア表示
+	if bj.dealer_revealed:
+		bj_dealer_score.text = "スコア: %s" % bj.score_display(bj.dealer_hand)
+	else:
+		# 裏カードがある間は表のカードのスコアのみ
+		var visible_hand := [bj.dealer_hand[0]] if bj.dealer_hand.size() > 0 else []
+		bj_dealer_score.text = "スコア: %s + ？" % bj.score_display(visible_hand)
+
+	bj_player_score.text = "スコア: %s" % bj.score_display(bj.player_hand)
+
+	# アクションボタン
+	bj_hit_btn.visible   = not is_result
+	bj_stand_btn.visible = not is_result
+	bj_again_btn.visible = is_result
+
+	# 結果表示
+	bj_result_area.visible = is_result
+	if is_result:
+		bj_result_lbl.text = bj.result_label()
+		bj_payout_lbl.text = bj.payout_label()
+		# 配当をスタッシュへ
+		if bj.payout > 0:
+			GameState.stash += bj.payout
+		_update_stash_display()
+		bj.payout = 0   # 二重加算防止
+		# 結果色
+		match bj.result:
+			"blackjack":
+				bj_result_lbl.add_theme_color_override("font_color", Color("#ffd700"))
+			"win":
+				bj_result_lbl.add_theme_color_override("font_color", Color("#44ff88"))
+			"push":
+				bj_result_lbl.add_theme_color_override("font_color", Color("#aaaaaa"))
+			"lose":
+				bj_result_lbl.add_theme_color_override("font_color", Color("#ff4444"))
+		bj_status_lbl.text = "もう一度遊ぶか閉じてください"
+	else:
+		bj_status_lbl.text = "ヒット: カードを引く  ／  スタンド: このまま勝負"
+
+func _bj_build_cards(row: HBoxContainer, hand: Array, hide_second: bool) -> void:
+	# 既存カードをクリア
+	for c in row.get_children():
+		c.queue_free()
+	# カードを追加
+	for i in hand.size():
+		var card_node := CardNodeScene.new()
+		var is_down: bool = (hide_second and i == 1)
+		row.add_child(card_node)
+		if is_down:
+			card_node.setup({}, true)
+		else:
+			card_node.setup(hand[i], false)
+
+# ═══════════════════════════════════════════════
+# ── ポーカー ────────────────────────────────────
+# ═══════════════════════════════════════════════
+func _on_poker_btn_pressed() -> void:
+	if GameState.stash < PokerManager.BET:
+		return
+	GameState.stash -= PokerManager.BET
+	_update_stash_display()
+	PokerManager.start_game()
+	_poker_refresh_ui()
+	poker_overlay.show()
+
+func _on_poker_close() -> void:
+	poker_overlay.hide()
+
+func _on_poker_check() -> void:
+	var pm := PokerManager
+	if pm.phase == PokerManager.Phase.BET1:
+		pm.bet1_check()
+	elif pm.phase == PokerManager.Phase.BET2:
+		pm.bet2_check()
+	_poker_refresh_ui()
+
+func _on_poker_raise() -> void:
+	var pm := PokerManager
+	if GameState.stash < PokerManager.RAISE_AMT:
+		poker_status_lbl.text = "⚠️ 残高不足でレイズできません"
+		return
+	GameState.stash -= PokerManager.RAISE_AMT
+	_update_stash_display()
+	if pm.phase == PokerManager.Phase.BET1:
+		pm.bet1_raise()
+	elif pm.phase == PokerManager.Phase.BET2:
+		pm.bet2_raise()
+	_poker_refresh_ui()
+
+func _on_poker_fold() -> void:
+	PokerManager.bet2_fold()
+	_poker_refresh_ui()
+
+func _on_poker_draw() -> void:
+	PokerManager.execute_draw()
+	_poker_refresh_ui()
+
+func _on_poker_play_again() -> void:
+	if GameState.stash < PokerManager.BET:
+		poker_status_lbl.text = "⚠️ 残高不足（¥%s 必要）" % _fmt(PokerManager.BET)
+		return
+	GameState.stash -= PokerManager.BET
+	_update_stash_display()
+	PokerManager.start_game()
+	_poker_refresh_ui()
+
+func _poker_refresh_ui() -> void:
+	var pm      := PokerManager
+	var phase   := pm.phase
+	var is_show: bool = phase == PokerManager.Phase.SHOWDOWN
+
+	# ポット表示
+	poker_pot_lbl.text = "ポット: ¥%s" % _fmt(pm.pot)
+
+	# ディーラー手札：ショーダウン前は全て伏せ
+	_poker_build_cards(poker_dealer_row, pm.dealer_hand, not is_show, -1)
+	poker_dealer_rank.text = pm.dealer_rank_name if is_show else "（伏せ中）"
+
+	# プレイヤー手札：常に表向き、DRAWフェーズは選択ハイライト
+	var draw_mode: bool = phase == PokerManager.Phase.DRAW
+	_poker_build_cards(poker_player_row, pm.player_hand, false, -1 if not draw_mode else 0)
+	poker_player_rank.text = pm.player_rank_name if is_show else ""
+
+	# ドローフェーズのヒント
+	if draw_mode:
+		var sel := pm.selected_idx
+		poker_draw_hint.text = "捨てるカードをクリックして選択（選択済%d枚）→「カードを交換」" % sel.size()
+	else:
+		poker_draw_hint.text = ""
+
+	# アクションボタン切り替え
+	var in_bet1: bool = phase == PokerManager.Phase.BET1
+	var in_bet2: bool = phase == PokerManager.Phase.BET2
+	poker_check_btn.visible  = in_bet1 or in_bet2
+	poker_raise_btn.visible  = in_bet1 or in_bet2
+	poker_fold_btn.visible   = in_bet2
+	poker_draw_btn.visible   = draw_mode
+	poker_again_btn.visible  = is_show
+
+	# ラベル調整
+	if in_bet1:
+		poker_check_btn.text = "✔ チェック（そのまま）"
+		poker_raise_btn.text = "↑ レイズ（+¥%s）" % _fmt(PokerManager.RAISE_AMT)
+	elif in_bet2:
+		poker_check_btn.text = "✔ チェック / コール"
+		poker_raise_btn.text = "↑ レイズ（+¥%s）" % _fmt(PokerManager.RAISE_AMT)
+
+	# 結果
+	poker_result_area.visible = is_show
+	if is_show:
+		poker_result_lbl.text  = pm.result_label()
+		poker_payout_lbl.text  = pm.payout_label()
+		if pm.payout > 0:
+			GameState.stash += pm.payout
+			_update_stash_display()
+		pm.payout = 0   # 二重加算防止
+		match pm.result:
+			"win":
+				poker_result_lbl.add_theme_color_override("font_color", Color("#44ff88"))
+			"push":
+				poker_result_lbl.add_theme_color_override("font_color", Color("#aaaaaa"))
+			"lose":
+				poker_result_lbl.add_theme_color_override("font_color", Color("#ff4444"))
+		poker_status_lbl.text = "ディーラー: %s　あなた: %s" % [pm.dealer_rank_name, pm.player_rank_name]
+	else:
+		_poker_set_phase_status(phase)
+
+func _poker_set_phase_status(phase: int) -> void:
+	match phase:
+		PokerManager.Phase.BET1:
+			poker_status_lbl.text = "【1回目のベット】 チェックかレイズを選んでください"
+		PokerManager.Phase.DRAW:
+			poker_status_lbl.text = "【カード交換】 捨てるカードを選んで「カードを交換」を押してください（0枚でもOK）"
+		PokerManager.Phase.BET2:
+			poker_status_lbl.text = "【2回目のベット】 チェック・レイズ・フォールドを選んでください"
+
+func _poker_build_cards(row: HBoxContainer, hand: Array, all_down: bool, _draw_mode_flag: int) -> void:
+	# 既存カードノードを削除
+	for c in row.get_children():
+		c.queue_free()
+
+	var pm := PokerManager
+	var draw_mode: bool = pm.phase == PokerManager.Phase.DRAW and not all_down
+
+	for i in hand.size():
+		var card_node := CardNodeScene.new()
+		row.add_child(card_node)
+		if all_down:
+			card_node.setup({}, true)
+		else:
+			card_node.setup(hand[i], false)
+
+		# DRAWフェーズ：選択済みカードに赤枠+暗転、クリックで選択トグル
+		if draw_mode:
+			var is_sel: bool = i in pm.selected_idx
+			card_node.set_selected(is_sel)
+			var idx := i
+			card_node.gui_input.connect(func(ev: InputEvent):
+				if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
+					PokerManager.toggle_discard(idx)
+					_poker_refresh_ui()
+			)
